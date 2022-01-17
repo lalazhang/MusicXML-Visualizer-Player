@@ -32,6 +32,8 @@ import utility.ValidationError;
 
 // This comment is a change made by Shahab Jami to test pushing and pulling to github
 
+// This comment is from Kris Singh to test pushing/pulling to github
+
 public class Score extends ScoreComponent {
 
 	private Map<Integer, String> scoreTextFragments;
