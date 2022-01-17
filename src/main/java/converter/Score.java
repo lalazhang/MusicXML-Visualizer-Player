@@ -32,7 +32,7 @@ import utility.ValidationError;
 
 // This comment is a change made by Shahab Jami to test pushing and pulling to github
 
-// This comment is from Kris Singh to test pushing and pulling to github
+//This is a comment from Kris Singh to test pushing and pulling to github
 
 public class Score extends ScoreComponent {
 
