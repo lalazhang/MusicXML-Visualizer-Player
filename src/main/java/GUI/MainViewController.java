@@ -308,6 +308,15 @@ public class MainViewController extends Application {
 	private void previewButtonHandle() throws IOException {
 //		System.out.println("Preview Button Clicked!");
 		// converter.getMusicXML() returns the MusicXML output as a String
+		
+		/*XmlDocument music = new XmlDocument();
+		music.LoadXml(converter.getMusicXML()); 
+		I was trying to figure out how to convert getMusicXML() to an xml document.
+		https://stackoverflow.com/questions/40242941/load-xml-file-after-reading-in-string
+		https://howtodoinjava.com/java/xml/parse-string-to-xml-dom/
+		Maybe the above links could help us?
+		*/
+		
 		Parent root;
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GUI/PreviewSheetView.fxml"));
