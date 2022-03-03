@@ -136,7 +136,7 @@ public class PrevSheetController extends Application {
 		Score score = mvc.converter.getScore();
     	return null;
     }
-    public int[][] printMusicXml()  {
+    public int[][] printMusicXml() throws TXMLException  {
 
 		String musicXml = mvc.converter.getMusicXML();
 		

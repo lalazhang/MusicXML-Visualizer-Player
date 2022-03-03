@@ -24,6 +24,7 @@ import org.fxmisc.richtext.model.StyleSpans;
 import converter.Converter;
 import converter.Score;
 import converter.measure.TabMeasure;
+import custom_exceptions.TXMLException;
 import javafx.application.Application;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -339,7 +340,7 @@ public class MainViewController extends Application {
 			}
 	
 			convertWindow = this.openNewWindow(root, "Sheet music output");
-		} catch (IOException e) {
+		} catch (IOException | TXMLException e) {
 			Logger logger = Logger.getLogger(getClass().getName());
 			logger.log(Level.SEVERE, "Failed to create new Window.", e);
 		}
