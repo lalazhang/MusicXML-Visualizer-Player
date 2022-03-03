@@ -21,6 +21,7 @@ import org.fxmisc.richtext.model.StyleSpans;
 
 import converter.Converter;
 import converter.measure.TabMeasure;
+import custom_exceptions.TXMLException;
 import javafx.application.Application;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -307,7 +308,7 @@ public class MainViewController extends Application {
 	}
 
 	@FXML
-	private void previewButtonHandle() throws IOException {
+	private void previewButtonHandle() throws IOException, TXMLException {
 //		System.out.println("Preview Button Clicked!");
 		// converter.getMusicXML() returns the MusicXML output as a String
 		
@@ -321,11 +322,20 @@ public class MainViewController extends Application {
 		
 		Parent root;
 		try {
+			Stage stage = new Stage();
 			FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GUI/PreviewSheetView.fxml"));
 			root = loader.load();
+			
 			PrevSheetController controller = loader.getController();
 			controller.setMainViewController(this);
-			
+			controller.printMusicXml();
+			try {
+				controller.start(stage);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	
 			convertWindow = this.openNewWindow(root, "Sheet music output");
 		} catch (IOException e) {
 			Logger logger = Logger.getLogger(getClass().getName());
@@ -334,7 +344,7 @@ public class MainViewController extends Application {
 		
 		
 	}
-	
+
 	@FXML
 	private void playButtonHandle() throws Exception {
 
