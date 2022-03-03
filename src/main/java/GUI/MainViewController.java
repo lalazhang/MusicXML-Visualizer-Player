@@ -15,11 +15,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import javax.xml.stream.events.XMLEvent;
+
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
 
 import converter.Converter;
+import converter.Score;
 import converter.measure.TabMeasure;
 import javafx.application.Application;
 import javafx.concurrent.Task;
@@ -42,7 +45,6 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import utility.Range;
 import utility.Settings;
-import utility.XmlPlayer;
 
 public class MainViewController extends Application {
 	
@@ -53,7 +55,7 @@ public class MainViewController extends Application {
 	
 	public Window convertWindow;
 	public Window settingsWindow;
-	public XmlPlayer mpl;
+
 	public Highlighter highlighter;
 	public Converter converter;
 
@@ -68,7 +70,6 @@ public class MainViewController extends Application {
 	@FXML  Button saveMXLButton;
 	@FXML  Button showMXLButton;
 	@FXML  Button previewButton;
-	@FXML  Button playButton;
 	@FXML  Button goToline;
 	@FXML  ComboBox<String> cmbScoreType;
 
@@ -84,11 +85,13 @@ public class MainViewController extends Application {
 	}
 
 	@FXML 
-	public void initialize() throws Exception {
+	public void initialize() {
 		mainText.setParagraphGraphicFactory(LineNumberFactory.get(mainText));
 		converter = new Converter(this);
 		highlighter = new Highlighter(this, converter);
     	listenforTextAreaChanges();
+    	
+    	
 	}
 
 	@FXML
@@ -321,32 +324,21 @@ public class MainViewController extends Application {
 		
 		Parent root;
 		try {
+			Stage stage = new Stage();
 			FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GUI/PreviewSheetView.fxml"));
 			root = loader.load();
+			
 			PrevSheetController controller = loader.getController();
 			controller.setMainViewController(this);
-			
-			convertWindow = this.openNewWindow(root, "Sheet music output");
-		} catch (IOException e) {
-			Logger logger = Logger.getLogger(getClass().getName());
-			logger.log(Level.SEVERE, "Failed to create new Window.", e);
-		}
-		
-		
-	}
+			controller.printMusicXml();
+			try {
+				controller.start(stage);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	
-	@FXML
-	private void playButtonHandle() throws Exception {
-
-		Parent root;
-		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GUI/tabPlayer.fxml"));
-			root = loader.load();
-			PlayMusicController controller = loader.getController();
-			
-			controller.setMainViewController(this, converter.getMusicXML());
-			
-			convertWindow = this.openNewWindow(root, "Music Player");
+			convertWindow = this.openNewWindow(root, "Sheet music output");
 		} catch (IOException e) {
 			Logger logger = Logger.getLogger(getClass().getName());
 			logger.log(Level.SEVERE, "Failed to create new Window.", e);
@@ -410,16 +402,12 @@ public class MainViewController extends Application {
                 	saveMXLButton.setDisable(true);
                 	previewButton.setDisable(true);
                 	showMXLButton.setDisable(true);
-                	//saveTabButton.setDisable(true);
-                	playButton.setDisable(true);
                 }
                 else
                 {
                 	saveMXLButton.setDisable(false);
                 	previewButton.setDisable(false);
                 	showMXLButton.setDisable(false);
-                	//saveTabButton.setDisable(false);
-                	playButton.setDisable(false);
                 }
                 return highlighter.computeHighlighting(text);
             }
