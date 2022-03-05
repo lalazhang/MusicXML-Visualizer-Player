@@ -37,6 +37,7 @@ public class PrevSheetController extends Application {
 	//public VBox myVBox;
 	
 	public String clef;
+	private String instrumentName;
 	@FXML 
 	public void initialize() {
 		//mxlTextPre.setParagraphGraphicFactory(LineNumberFactory.get(mxlTextPre));
@@ -45,13 +46,16 @@ public class PrevSheetController extends Application {
 		//myVBox.setStyle("-fx-border-color: red");
 		//String musicXml = mvc.converter.getMusicXML();
 		//System.out.println(musicXml);
+		
+		Dot01 test = new Dot01();
+		test.view();
 	}
 	@Override
 	
 
 	public void start(Stage primaryStage) throws Exception {
 		// TODO Auto-generated method stub
-		
+	
 		int[][] notePosition = printMusicXml();
 		Text text = new Text(500,100,"Drumset");
 		Group box = new Group();
@@ -130,34 +134,23 @@ public class PrevSheetController extends Application {
     	
     }
 
-    public String instrumentName() {
+    public String getInstrumentName(Score score) throws TXMLException {
 	
 		
-		Score score = mvc.converter.getScore();
-    	return null;
+    	String instrumentName = score.getModel().getPartList().getScoreParts().get(0).getPartName();
+    	return instrumentName;
     }
-    public int[][] printMusicXml() throws TXMLException  {
-
-		String musicXml = mvc.converter.getMusicXML();
+    
+    
+    public int getNoteListSizeDrum(Score score) {
+		List<TabMeasure> measureList = score.getMeasureList();
 		
-		Score score1 = mvc.converter.getScore();
-		
-		System.out.println(musicXml);
-		//Score score = new Score(musicXml);
-		
-		int scoreMeasureListSize = mvc.converter.getScore().getMeasureList().size();
-		//int noteSize = score1.getMeasureList().get(1).getSortedNoteList().size();
-		
-		
-		List<TabMeasure> measureList = score1.getMeasureList();
 		int noteSize=0;
+		
 		for(int i=0; i<measureList.size();i++) {
 			for (int j=0; j<measureList.get(i).getSortedNoteList().size();j++)
 			{	
-				int octiveInt = measureList.get(i).getSortedNoteList().get(j).getModel().getUnpitched().getDisplayOctave();
-				String octive = String.valueOf(octiveInt);
-				String note = measureList.get(i).getSortedNoteList().get(j).getModel().getUnpitched().getDisplayStep();
-				String type = measureList.get(i).getSortedNoteList().get(j).getModel().getType();
+				//int octiveInt = measureList.get(i).getSortedNoteList().get(j).getModel().getUnpitched().getDisplayOctave();
 				if(measureList.get(i).getSortedNoteList().get(j).getModel().getChord()==null) 
 					{
 					noteSize++;
@@ -168,9 +161,59 @@ public class PrevSheetController extends Application {
 			}
 			
 		}
+		return noteSize;
 		
+    }
+    
+    public int getNoteListSizeGuitar(Score score) {
+  		List<TabMeasure> measureList = score.getMeasureList();
+  		
+  		int noteSize=0;
+  		
+  		for(int i=0; i<measureList.size();i++) {
+  			for (int j=0; j<measureList.get(i).getSortedNoteList().size();j++)
+  			{	
+  				int octiveInt = measureList.get(i).getSortedNoteList().get(j).getModel().getPitch().getOctave();
+  				String octive = String.valueOf(octiveInt);
+  				String note = measureList.get(i).getSortedNoteList().get(j).getModel().getPitch().getStep();
+  				String type = measureList.get(i).getSortedNoteList().get(j).getModel().getType();
+  				if(measureList.get(i).getSortedNoteList().get(j).getModel().getChord()==null) 
+  					{
+  					noteSize++;
+  					}
+
+  				
+  				
+  			}
+  			
+  		}
+  		return noteSize;
+  		
+      }
+    
+    public int[][] printMusicXml() throws TXMLException  {
+
+		String musicXml = mvc.converter.getMusicXML();
+		
+		Score score1 = mvc.converter.getScore();
+		
+		//System.out.println(musicXml);
+
+		String instrumentName = getInstrumentName(score1);
+		
+		int scoreMeasureListSize = mvc.converter.getScore().getMeasureList().size();
+		//int noteSize = score1.getMeasureList().get(1).getSortedNoteList().size();
+		
+		
+		
+		  List<TabMeasure> measureList = score1.getMeasureList();
+		  
+
+		
+		int noteSize = getNoteListSizeDrum(score1);	
 		int notePosition[][] = new int[noteSize][2] ;
 		
+		//Make default position 20 and 20 is ignored while drawing notes
 		for (int i=0;i<noteSize;i++) {
 			notePosition[i][1]=20;
 		}
@@ -214,6 +257,8 @@ public class PrevSheetController extends Application {
 			}
 			
 		}
+		
+		
 		for (int i=0; i<notePosition.length;i++) {
 			for (int j=0; j<notePosition[i].length;j++) {
 				//System.out.println(notePosition[i][j]);
@@ -225,14 +270,18 @@ public class PrevSheetController extends Application {
 		
 		List<Part> partList = score1.getModel().getParts();
 		
-		System.out.println("score counts: "+score1.getModel().getScoreCount());
+		//System.out.println("score counts: "+score1.getModel().getScoreCount());
 		
 		
 		
 		clef = partList.get(0).getMeasures().get(0).getAttributes().clef.sign;
-		//String printStr2 = score.getModel().getParts().get(0).getId();
-		//int printInt = score.getModel().getPartList().getScoreParts().size();
-		System.out.printf("clef of this music sheet: %s", clef);
+		
+		
+		
+		System.out.printf("clef of this music sheet: %s \n", clef);
+		System.out.printf("instrument: %s \n", instrumentName);
+		
+		
 		return notePosition;
 		
     }
