@@ -17,6 +17,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -30,6 +31,9 @@ import models.part_list.ScorePart;
 
 
 public class PrevSheetController extends Application {
+	@FXML 
+	private BorderPane borderPaneCode;
+	
 	private MainViewController mvc;
 	@FXML 
 	public CodeArea mxlTextPre;  
@@ -110,8 +114,9 @@ public class PrevSheetController extends Application {
 
 
 		}
+		borderPaneCode.getChildren().add(box);
 		
-		Scene scene = new Scene(box,1000,600,Color.AZURE);
+		Scene scene = new Scene(borderPaneCode,1000,600,Color.AZURE);
 		
 		primaryStage.setTitle("music sheet");
 		
