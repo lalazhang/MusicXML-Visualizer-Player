@@ -151,7 +151,7 @@ public class PlayMusicTest extends ApplicationTest {
         		+ "BD|o-------o-------|o-------o-------|", 0);
         robot.clickOn("#playButton");
         
-        //Check if the current time on the player is 00:00 since the window just launched
+        //Confirm that the default slider value of 120.0 is correct
         FxAssert.verifyThat("#tempSlider", (Slider current) -> {
         	double lbl = current.getValue();
         	return lbl==120.0;
