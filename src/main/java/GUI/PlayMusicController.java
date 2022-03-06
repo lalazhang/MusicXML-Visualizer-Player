@@ -47,7 +47,7 @@ public class PlayMusicController extends Application {
 	private Timer timer;
 	private TimerTask task;
 	@FXML
-	Button playButton;
+	Button playMusic;
 	@FXML
 	Button pauseButton;
 	@FXML
@@ -164,7 +164,7 @@ public class PlayMusicController extends Application {
 	}
 	
 	public void beginTimer() {
-		playing = mp.getManagedPlayer().isPlaying();
+		playing = true;
 		
 		timer = new Timer();
 		task = new TimerTask() {
@@ -189,9 +189,21 @@ public class PlayMusicController extends Application {
 		timer.scheduleAtFixedRate(task, 1000, 1000);
 	}
 	
+	public void playMusicHandleTest() throws Exception {
+
+		mvc.converter.update();
+		mp.play();
+		beginTimer();
+		
+	}
+	
 	public void cancelTimer() {
 		playing = false;
 		timer.cancel();
+	}
+	
+	public boolean getPlaying() {
+		return playing;
 	}
 
 	@FXML
@@ -200,6 +212,10 @@ public class PlayMusicController extends Application {
 		timer.cancel();
 	}
 
+	public void setBPM(double bpm) {
+		tempSlider.setValue(bpm);
+	}
+	
 	@FXML
 	private void exit() {
 		mp.getManagedPlayer().finish();
