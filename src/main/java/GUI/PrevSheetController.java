@@ -89,7 +89,7 @@ public class PrevSheetController extends Application {
 		int noteHeightDrum=0;
 
 		
-		//draw clef and drum notes
+		//draw clef and Drum notes
 		System.out.println(clef);
 		if(clef.matches("percussion")) {
 			Line line1 = new Line(105,220,105,240);
@@ -98,21 +98,26 @@ public class PrevSheetController extends Application {
 			line2.setStrokeWidth(4);
 			box.getChildren().add(line2);
 			box.getChildren().add(line1);
-			
+			System.out.printf("drum note span size" + String.valueOf(noteSpanSize.length));
 			for (int i=0; i<noteSpanSize.length;i++) {
-				for (int j=0; j<noteSpanSize[i].length;j++) {
-					noteHeightDrum=noteSpanSize[i][j];
-					if(noteHeightDrum<20) {
-						Line noteLine = new Line(135+25.0*i,200-5.0*noteHeightDrum,135+25.0*i,250-5.0*noteHeightDrum);
-						Circle note = new Circle(130+25.0*i,250.0-5.0*noteHeightDrum,5 );
-						note.setFill(Color.MIDNIGHTBLUE);
+//				for(int ii=0;i<i%30;ii++) {
+				int height = i/30;
+				int horizontalSpan =i%30;
+					for (int j=0; j<noteSpanSize[i].length;j++) {
+						noteHeightDrum=noteSpanSize[i][j];
+						if(noteHeightDrum<20) {
+							Line noteLine = new Line(135+25.0*i,200-5.0*noteHeightDrum,135+25.0*i,250-5.0*noteHeightDrum);
+							Circle note = new Circle(130+25.0*i,250.0-5.0*noteHeightDrum,5 );
+							note.setFill(Color.MIDNIGHTBLUE);
 
 
-						box.getChildren().add(noteLine);
-						box.getChildren().add(note);
+							box.getChildren().add(noteLine);
+							box.getChildren().add(note);
+						}
+
 					}
+//				}
 
-				}
 				
 			}
 
@@ -196,12 +201,15 @@ public class PrevSheetController extends Application {
 		for(int i=0; i<measureList.size();i++) {
 			for (int j=0; j<measureList.get(i).getSortedNoteList().size();j++)
 			{	
-				if(measureList.get(i).getSortedNoteList().get(j).getModel().getChord()==null) 
-					{
-					noteSize++;
-					}
-
 				
+				int duration=measureList.get(i).getSortedNoteList().get(j).duration;
+				System.out.println("duration: "+duration);
+				
+				/*
+				 * if(measureList.get(i).getSortedNoteList().get(j).getModel().getChord()==null)
+				 * {
+				 */ noteSize++; /* } */
+				 
 				
 			}
 			
@@ -218,23 +226,17 @@ public class PrevSheetController extends Application {
   		for(int i=0; i<measureList.size();i++) {
   			for (int j=0; j<measureList.get(i).getSortedNoteList().size();j++)
   			{	
-				/*
-				 * int octiveInt =
-				 * measureList.get(i).getSortedNoteList().get(j).getModel().getPitch().getOctave
-				 * (); String octive = String.valueOf(octiveInt); String note =
-				 * measureList.get(i).getSortedNoteList().get(j).getModel().getPitch().getStep()
-				 * ; String type =
-				 * measureList.get(i).getSortedNoteList().get(j).getModel().getType();
-				 */
-  				if(measureList.get(i).getSortedNoteList().get(j).getModel().getChord()==null) 
-  					{
+	
+				  if(measureList.get(i).getSortedNoteList().get(j).getModel().getChord()==null)
+				  {
+				 
   					noteSize++;
   					}
-
-  				
-  				
-  			}
-  			
+				  else {
+					  noteSize++;
+				  }
+  				 				
+  			} 			
   		}
   		return noteSize;
   		
@@ -256,9 +258,15 @@ public class PrevSheetController extends Application {
 		
 		
 		 List<TabMeasure> measureList = score1.getMeasureList();
-	
-
-		int noteSize = getNoteListSizeDrum(score1);	
+		 int noteSize=0;
+		 if(instrumentName.contains("Drum")) {
+			 noteSize = getNoteListSizeDrum(score1);	
+		 }
+		 if(instrumentName.contains("Guitar")) {
+			 noteSize = getNoteListSizeGuitar(score1);	
+		 }
+		
+		
 		int notePosition[][] = new int[noteSize][2] ;
 		
 		//Make default position 20 and 20 is ignored while drawing notes
@@ -274,31 +282,37 @@ public class PrevSheetController extends Application {
 			for(int i=0; i<measureList.size();i++) {
 				for (int j=0; j<measureList.get(i).getSortedNoteList().size();j++)
 				{	
-					int octiveInt = measureList.get(i).getSortedNoteList().get(j).getModel().getUnpitched().getDisplayOctave();
-					String octive = String.valueOf(octiveInt);
-					String note = measureList.get(i).getSortedNoteList().get(j).getModel().getUnpitched().getDisplayStep();
-					String type = measureList.get(i).getSortedNoteList().get(j).getModel().getType();
-					//String notehead= measureList.get(i).getSortedNoteList().get(j).getModel().getNotehead().toString();
-					if(measureList.get(i).getSortedNoteList().get(j).getModel().getChord()==null) 
-						{
-						notePositionIndexD2=0;
-						System.out.println("\n"+note +octive);
-						String noteWithOctive = note+octive;
-						//System.out.println(noteWithOctive);
-						int notePositionOnStaff = noteToNumber(noteWithOctive);
-						notePosition[notePositionIndexD1][notePositionIndexD2]=notePositionOnStaff;
-						notePositionIndexD1++;
-						System.out.println(notePositionOnStaff);
-						}
+					if(measureList.get(i).getSortedNoteList().get(j).getModel()==null ||measureList.get(i).getSortedNoteList().get(j).getModel().getUnpitched()==null ) {
+			
+					}
 					else {
-						System.out.println(note+octive );
-						String noteWithOctive = note+octive;
-						int notePositionOnStaff = noteToNumber(noteWithOctive);
-						notePositionIndexD2=1;
-						notePositionIndexD1--;
-						notePosition[notePositionIndexD1][notePositionIndexD2]=notePositionOnStaff;
-						notePositionIndexD1++;
-						
+						int octiveInt = measureList.get(i).getSortedNoteList().get(j).getModel().getUnpitched().getDisplayOctave();
+						String octive = String.valueOf(octiveInt);
+						String note = measureList.get(i).getSortedNoteList().get(j).getModel().getUnpitched().getDisplayStep();
+						String type = measureList.get(i).getSortedNoteList().get(j).getModel().getType();
+						//String notehead= measureList.get(i).getSortedNoteList().get(j).getModel().getNotehead().toString();
+						if(measureList.get(i).getSortedNoteList().get(j).getModel().getChord()==null) 
+							{
+							notePositionIndexD2=0;
+							System.out.println("\n"+note +octive);
+							String noteWithOctive = note+octive;
+							//System.out.println(noteWithOctive);
+							int notePositionOnStaff = noteToNumber(noteWithOctive);
+							notePosition[notePositionIndexD1][notePositionIndexD2]=notePositionOnStaff;
+							notePositionIndexD1++;
+							System.out.println(notePositionOnStaff);
+							}
+						else {
+							System.out.println(note+octive );
+							String noteWithOctive = note+octive;
+							int notePositionOnStaff = noteToNumber(noteWithOctive);
+							notePositionIndexD2=1;
+							notePositionIndexD1--;
+							notePosition[notePositionIndexD1][notePositionIndexD2]=notePositionOnStaff;
+							notePositionIndexD1++;
+							
+						}
+				
 					}
 					
 					
@@ -318,8 +332,10 @@ public class PrevSheetController extends Application {
 	  				int fret = measureList.get(i).getSortedNoteList().get(j).getModel().getNotations().getTechnical().getFret();	
 	  				int stringPosition = measureList.get(i).getSortedNoteList().get(j).getModel().getNotations().getTechnical().getString();
 					String type = measureList.get(i).getSortedNoteList().get(j).getModel().getType();
-					if(measureList.get(i).getSortedNoteList().get(j).getModel().getChord()==null) 
-						{
+					
+		/*			  if(measureList.get(i).getSortedNoteList().get(j).getModel().getChord()==null)
+					  {
+					 */
 						notePositionIndexD2=0;
 						System.out.println("\n"+fret +stringPosition);
 				
@@ -328,7 +344,8 @@ public class PrevSheetController extends Application {
 						notePosition[notePositionIndexD1][notePositionIndexD2+1]=stringPosition;
 						notePositionIndexD1++;
 
-						}
+						/* } */
+			
 					
 					
 				}
