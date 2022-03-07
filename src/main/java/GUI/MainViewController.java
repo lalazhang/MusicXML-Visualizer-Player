@@ -344,7 +344,7 @@ public class MainViewController extends Application {
 
 		Parent root;
 		
-		try {
+		
 		
 			Stage stage = new Stage();
 //			FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GUI/PreviewSheetView.fxml"));

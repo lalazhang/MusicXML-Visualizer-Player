@@ -71,8 +71,8 @@ public class XmlPlayer {
 	private Player player;
 
 	/**
-	 * Constructor takes mainview object and xml output as string, instantiates our fields
-	 * and calls update method
+	 * Constructor takes mainview object and xml output as string, instantiates our
+	 * fields and calls update method
 	 * 
 	 * @param str
 	 * @throws Exception
@@ -308,11 +308,14 @@ public class XmlPlayer {
 				// build rhythm
 				String note = mvcInput.converter.getScore().getMeasureList().get(i).tabStringList.get(j).name;
 				String line = mvcInput.converter.getScore().getMeasureList().get(i).tabStringList.get(j).line;
+//				System.out.println(note + "l");
+//				System.out.println(line + "l");
 				/**
-				 * State machine to iterate through lines of all measures in a drum tab and build drumset pattern from them
-				 * TODO confirm types of instrument strikes match sounds such as g(grace), f and d 
+				 * State machine to iterate through lines of all measures in a drum tab and
+				 * build drumset pattern from them TODO confirm types of instrument strikes
+				 * match sounds such as g(grace), f and d
 				 */
-				
+
 				switch (note) {
 				case ("C "):// Crash cymbal
 					// layer string to build layers for rhythm
@@ -654,6 +657,252 @@ public class XmlPlayer {
 					}
 					rhythm.addLayer(phLayer);
 					break;
+				default:
+					if (note.equals("CC")) {
+						// layer string to build layers for rhythm
+						String cLayer = "";
+						/**
+						 * Iterate though line array and build layer string based on characters in line
+						 */
+						for (char c : line.toCharArray()) {
+							switch (c) {
+							case ('-'):
+								cLayer = cLayer + ".";
+								break;
+							case ('X'):
+								cLayer = cLayer + "*";
+								break;
+							case ('r'):
+								cLayer = cLayer + ".";
+								break;
+							case ('s'):
+								break;
+							case ('x'):
+								cLayer = cLayer + "*";
+								break;
+							default:
+								cLayer = cLayer + ".";
+								break;
+							}
+
+						}
+						rhythm.addLayer(cLayer);
+
+					} else if (note.equals("HH")) {
+						// layer string to build layers for rhythm
+						String hLayer = "";
+						/**
+						 * Iterate though line array and build layer string based on characters in line
+						 */
+						for (char c : line.toCharArray()) {
+							switch (c) {
+							case ('-'):
+								hLayer = hLayer + ".";
+								break;
+							case ('x'):
+								hLayer = hLayer + ">";
+								break;
+							case ('d'):
+								hLayer = hLayer + ">";
+								break;
+							case ('o'):
+								hLayer = hLayer + "<";
+								break;
+							case ('O'):
+								hLayer = hLayer + "<";
+								break;
+							case ('X'):
+								hLayer = hLayer + ">";
+								break;
+							default:
+								hLayer = hLayer + ".";
+								break;
+							}
+						}
+						rhythm.addLayer(hLayer);
+
+					} else if (note.equals("SD")) {
+						// layer string to build layers for rhythm
+						String sDLayer = "";
+						/**
+						 * Iterate though line array and build layer string based on characters in line
+						 */
+						for (char c : line.toCharArray()) {
+							switch (c) {
+							case ('-'):
+								sDLayer = sDLayer + ".";
+								break;
+							case ('o'):
+								sDLayer = sDLayer + "s";
+								break;
+							case ('f'):
+								sDLayer = sDLayer + "s";
+								break;
+							case ('O'):
+								sDLayer = sDLayer + "S";
+								break;
+							case ('g'):
+								sDLayer = sDLayer + "s";
+								break;
+							case ('d'):
+								sDLayer = sDLayer + "s";
+								break;
+							case ('r'):
+								sDLayer = sDLayer + ".";
+								break;
+							default:
+								sDLayer = sDLayer + ".";
+								break;
+							}
+						}
+						rhythm.addLayer(sDLayer);
+
+					}else if (note.equals("HT")) {
+						// layer string to build layers for rhythm
+						String fhTLayer = "";
+						/**
+						 * Iterate though line array and build layer string based on characters in line
+						 */
+						for (char c : line.toCharArray()) {
+							switch (c) {
+							case ('-'):
+								fhTLayer = fhTLayer + ".";
+								break;
+							case ('o'):
+								fhTLayer = fhTLayer + ",";
+								break;
+							case ('f'):
+								fhTLayer = fhTLayer + ",";
+								break;
+							case ('O'):
+								fhTLayer = fhTLayer + ",";
+								break;
+							case ('g'):
+								fhTLayer = fhTLayer + ",";
+								break;
+							case ('d'):
+								fhTLayer = fhTLayer + ",";
+								break;
+							case ('r'):
+								fhTLayer = fhTLayer + ".";
+								break;
+							default:
+								fhTLayer = fhTLayer + ".";
+								break;
+							}
+						}
+						rhythm.addLayer(fhTLayer);
+					}
+					else if (note.equals("MT")) {
+						// layer string to build layers for rhythm
+						String fMTLayer = "";
+						/**
+						 * Iterate though line array and build layer string based on characters in line
+						 */
+						for (char c : line.toCharArray()) {
+							switch (c) {
+							case ('-'):
+								fMTLayer = fMTLayer + ".";
+								break;
+							case ('o'):
+								fMTLayer = fMTLayer + "_";
+								break;
+							case ('f'):
+								fMTLayer = fMTLayer + "_";
+								break;
+							case ('O'):
+								fMTLayer = fMTLayer + "_";
+								break;
+							case ('g'):
+								fMTLayer = fMTLayer + "_";
+								break;
+							case ('d'):
+								fMTLayer = fMTLayer + "_";
+								break;
+							case ('r'):
+								fMTLayer = fMTLayer + ".";
+								break;
+							default:
+								fMTLayer = fMTLayer + ".";
+								break;
+							}
+						}
+						rhythm.addLayer(fMTLayer);
+					}
+					else if (note.equals("BD")) {
+						// layer string to build layers for rhythm
+						String bLayer = "";
+						/**
+						 * Iterate though line array and build layer string based on characters in line
+						 */
+						for (char c : line.toCharArray()) {
+							switch (c) {
+							case ('-'):
+								bLayer = bLayer + ".";
+								break;
+							case ('o'):
+								bLayer = bLayer + "o";
+								break;
+							case ('f'):
+								bLayer = bLayer + "o";
+								break;
+							case ('O'):
+								bLayer = bLayer + "O";
+								break;
+							case ('g'):
+								bLayer = bLayer + "o";
+								break;
+							case ('d'):
+								bLayer = bLayer + "o";
+								break;
+							case ('r'):
+								bLayer = bLayer + ".";
+								break;
+							default:
+								bLayer = bLayer + ".";
+								break;
+							}
+						}
+						rhythm.addLayer(bLayer);
+
+					}
+					else if (note.equals("FT")) {
+						// layer string to build layers for rhythm
+						String lFTLayer = "";
+						/**
+						 * Iterate though line array and build layer string based on characters in line
+						 */
+						for (char c : line.toCharArray()) {
+							switch (c) {
+							case ('-'):
+								lFTLayer = lFTLayer + ".";
+								break;
+							case ('o'):
+								lFTLayer = lFTLayer + ":";
+								break;
+							case ('f'):
+								lFTLayer = lFTLayer + ":";
+								break;
+							case ('O'):
+								lFTLayer = lFTLayer + ":";
+								break;
+							case ('g'):
+								lFTLayer = lFTLayer + ":";
+								break;
+							case ('d'):
+								lFTLayer = lFTLayer + ":";
+								break;
+							case ('r'):
+								lFTLayer = lFTLayer + ".";
+								break;
+							default:
+								lFTLayer = lFTLayer + ".";
+								break;
+							}
+						}
+						rhythm.addLayer(lFTLayer);
+					}
+					break;
 
 				}
 
@@ -668,8 +917,8 @@ public class XmlPlayer {
 			}
 
 		}
-		//FIXME fix drum pattern timing
-		
+		// FIXME fix drum pattern timing
+
 		return drumPattern;
 
 	}
