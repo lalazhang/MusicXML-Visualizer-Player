@@ -48,8 +48,9 @@ public class PrevSheetController extends Application {
 		//String musicXml = mvc.converter.getMusicXML();
 		//System.out.println(musicXml);
 		
-		Dot01 test = new Dot01();
-		test.view();
+		/*
+		 * Dot01 test = new Dot01(); test.view();
+		 */
 	}
 	@Override
 	
@@ -101,13 +102,18 @@ public class PrevSheetController extends Application {
 			System.out.printf("drum note span size" + String.valueOf(noteSpanSize.length));
 			for (int i=0; i<noteSpanSize.length;i++) {
 //				for(int ii=0;i<i%30;ii++) {
-				int height = i/30;
-				int horizontalSpan =i%30;
+				
+					int dividend=i, divisor=30;
+				  int height =dividend/divisor;
+				  int horizontalSpan =i%30;
+				  System.out.println("i/30 "+ height); 
+				  System.out.println("i%30 "+ horizontalSpan);
+				 
 					for (int j=0; j<noteSpanSize[i].length;j++) {
 						noteHeightDrum=noteSpanSize[i][j];
 						if(noteHeightDrum<20) {
-							Line noteLine = new Line(135+25.0*i,200-5.0*noteHeightDrum,135+25.0*i,250-5.0*noteHeightDrum);
-							Circle note = new Circle(130+25.0*i,250.0-5.0*noteHeightDrum,5 );
+							Line noteLine = new Line(135+25.0*horizontalSpan,200-5.0*noteHeightDrum+60*height,135+25.0*horizontalSpan,250-5.0*noteHeightDrum+60*height);
+							Circle note = new Circle(130+25.0*horizontalSpan,250.0-5.0*noteHeightDrum+60*height,5 );
 							note.setFill(Color.MIDNIGHTBLUE);
 
 
