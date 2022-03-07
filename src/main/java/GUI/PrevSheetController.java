@@ -20,6 +20,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -37,6 +38,7 @@ public class PrevSheetController extends Application {
 	//public VBox myVBox;
 	
 	public String clef;
+	private String instrumentName;
 	@FXML 
 	public void initialize() {
 		//mxlTextPre.setParagraphGraphicFactory(LineNumberFactory.get(mxlTextPre));
@@ -51,9 +53,11 @@ public class PrevSheetController extends Application {
 
 	public void start(Stage primaryStage) throws Exception {
 		// TODO Auto-generated method stub
-		
-		int[][] notePosition = printMusicXml();
-		Text text = new Text(500,100,"Drumset");
+		Score score = mvc.converter.getScore();
+		String instrumentName = getInstrumentName(score);
+		int[][] noteSpanSize = printMusicXml();
+		Text instrumentNameTitle = new Text(450,100,instrumentName);
+		instrumentNameTitle.setFont(Font.font("Verdana", 50));
 		Group box = new Group();
 		Line xAxis = new Line(100,300,900,300);
 		xAxis.setStroke(Color.WHITE);
@@ -68,37 +72,21 @@ public class PrevSheetController extends Application {
 		yAxis.setStroke(Color.WHITE);
 		box.getChildren().add(yAxis);
 		
-		box.getChildren().add(text);
+		box.getChildren().add(instrumentNameTitle);
 		
 		//Draw Staff
-		for (int i=0;i<5;i++) {
-			Line staffLine = new Line(100.0,250.0-10.0*i,900.0,250.0-10.0*i);
-
-			box.getChildren().add(staffLine);
-
-			}
-		
-		//Draw notes
-		int noteHeight=0;
-		
-		for (int i=0; i<notePosition.length;i++) {
-			for (int j=0; j<notePosition[i].length;j++) {
-				noteHeight=notePosition[i][j];
-				if(noteHeight<20) {
-					Line noteLine = new Line(135+25.0*i,200-5.0*noteHeight,135+25.0*i,250-5.0*noteHeight);
-					Circle note = new Circle(130+25.0*i,250.0-5.0*noteHeight,5 );
-					note.setFill(Color.MIDNIGHTBLUE);
-
-
-					box.getChildren().add(noteLine);
-					box.getChildren().add(note);
-				}
-
-			}
-			
+		if(instrumentName.contains("Drum")) {
+			drawStaff5(box);
+		}
+		else if(instrumentName.contains("Guitar")) {
+			drawStaff6(box);
 		}
 		
-		//draw clef
+		//Draw notes
+		int noteHeightDrum=0;
+
+		
+		//draw clef and Drum notes
 		System.out.println(clef);
 		if(clef.matches("percussion")) {
 			Line line1 = new Line(105,220,105,240);
@@ -107,10 +95,58 @@ public class PrevSheetController extends Application {
 			line2.setStrokeWidth(4);
 			box.getChildren().add(line2);
 			box.getChildren().add(line1);
+			System.out.printf("drum note span size" + String.valueOf(noteSpanSize.length));
+			for (int i=0; i<noteSpanSize.length;i++) {
+//				for(int ii=0;i<i%30;ii++) {
+				/*
+				 * int height = Integer.valueOf(i/30); int horizontalSpan =i%30;
+				 * System.out.printf("i/30 %d", height); System.out.printf("i%30 %d",
+				 * horizontalSpan);
+				 */
+					for (int j=0; j<noteSpanSize[i].length;j++) {
+						noteHeightDrum=noteSpanSize[i][j];
+						if(noteHeightDrum<20) {
+							Line noteLine = new Line(135+25.0*i,200-5.0*noteHeightDrum,135+25.0*i,250-5.0*noteHeightDrum);
+							Circle note = new Circle(130+25.0*i,250.0-5.0*noteHeightDrum,5 );
+							note.setFill(Color.MIDNIGHTBLUE);
+
+
+							box.getChildren().add(noteLine);
+							box.getChildren().add(note);
+						}
+
+					}
+//				}
+
+				
+			}
+
+		}
+		//draw TAB and Guitar notes
+		else if(clef.matches("TAB")) {
+			Text t = new Text(105,215,"T");
+			t.setFont(Font.font("Verdana", 20));
+			t.setFill(Color.CRIMSON);
+			Text a = new Text(105,230,"A");
+			a.setFont(Font.font("Verdana", 20));
+			a.setFill(Color.CRIMSON);
+			Text b = new Text(105,245,"B");
+			b.setFont(Font.font("Verdana", 20));
+			b.setFill(Color.CRIMSON);
+			box.getChildren().add(t);
+			box.getChildren().add(a);
+			box.getChildren().add(b);
+			for (int i=0; i<noteSpanSize.length;i++) {
+				int stringIndex = noteSpanSize[i][1];
+				String fret = Integer.toString(noteSpanSize[i][0]);
+				Text fretText= new Text(130+25*i, 200+stringIndex*10,fret);
+				fretText.setFill(Color.CRIMSON);
+				box.getChildren().add(fretText);
+				
+			}
 
 
 		}
-		
 		Scene scene = new Scene(box,1000,600,Color.AZURE);
 		
 		primaryStage.setTitle("music sheet");
@@ -120,7 +156,8 @@ public class PrevSheetController extends Application {
 		primaryStage.show();
 	}
 	
-
+	
+	
     public void setMainViewController(MainViewController mvcInput) {
     
 		
@@ -129,91 +166,193 @@ public class PrevSheetController extends Application {
     	mvc = mvcInput;
     	
     }
+    
+    public void drawStaff5(Group box) {
+		for (int i=0;i<5;i++) {
+			Line staffLine = new Line(100.0,250.0-10.0*i,900.0,250.0-10.0*i);
 
-    public String instrumentName() {
+			box.getChildren().add(staffLine);
+
+			}
+    }
+    
+    public void drawStaff6(Group box) {
+		for (int i=0;i<6;i++) {
+			Line staffLine = new Line(100.0,250.0-10.0*i,900.0,250.0-10.0*i);
+
+			box.getChildren().add(staffLine);
+
+			}
+    }
+
+    public String getInstrumentName(Score score) throws TXMLException {
 	
 		
-		Score score = mvc.converter.getScore();
-    	return null;
+    	String instrumentName = score.getModel().getPartList().getScoreParts().get(0).getPartName();
+    	return instrumentName;
     }
+    
+    
+    public int getNoteListSizeDrum(Score score) {
+		List<TabMeasure> measureList = score.getMeasureList();
+		
+		int noteSize=0;
+		
+		for(int i=0; i<measureList.size();i++) {
+			for (int j=0; j<measureList.get(i).getSortedNoteList().size();j++)
+			{	
+				
+				int duration=measureList.get(i).getSortedNoteList().get(j).duration;
+				System.out.println("duration: "+duration);
+				
+				/*
+				 * if(measureList.get(i).getSortedNoteList().get(j).getModel().getChord()==null)
+				 * {
+				 */ noteSize++; /* } */
+				 
+				
+			}
+			
+		}
+		return noteSize;
+		
+    }
+    
+    public int getNoteListSizeGuitar(Score score) {
+  		List<TabMeasure> measureList = score.getMeasureList();
+  		
+  		int noteSize=0;
+  		
+  		for(int i=0; i<measureList.size();i++) {
+  			for (int j=0; j<measureList.get(i).getSortedNoteList().size();j++)
+  			{	
+	
+				  if(measureList.get(i).getSortedNoteList().get(j).getModel().getChord()==null)
+				  {
+				 
+  					noteSize++;
+  					}
+				  else {
+					  noteSize++;
+				  }
+  				 				
+  			} 			
+  		}
+  		return noteSize;
+  		
+      }
+    
     public int[][] printMusicXml() throws TXMLException  {
 
 		String musicXml = mvc.converter.getMusicXML();
 		
 		Score score1 = mvc.converter.getScore();
 		
-		System.out.println(musicXml);
-		//Score score = new Score(musicXml);
+		//System.out.println(musicXml);
+
+		String instrumentName = getInstrumentName(score1);
 		
 		int scoreMeasureListSize = mvc.converter.getScore().getMeasureList().size();
 		//int noteSize = score1.getMeasureList().get(1).getSortedNoteList().size();
 		
 		
-		List<TabMeasure> measureList = score1.getMeasureList();
-		int noteSize=0;
-		for(int i=0; i<measureList.size();i++) {
-			for (int j=0; j<measureList.get(i).getSortedNoteList().size();j++)
-			{	
-				int octiveInt = measureList.get(i).getSortedNoteList().get(j).getModel().getUnpitched().getDisplayOctave();
-				String octive = String.valueOf(octiveInt);
-				String note = measureList.get(i).getSortedNoteList().get(j).getModel().getUnpitched().getDisplayStep();
-				String type = measureList.get(i).getSortedNoteList().get(j).getModel().getType();
-				if(measureList.get(i).getSortedNoteList().get(j).getModel().getChord()==null) 
-					{
-					noteSize++;
-					}
-
-				
-				
-			}
-			
-		}
+		
+		 List<TabMeasure> measureList = score1.getMeasureList();
+		 int noteSize=0;
+		 if(instrumentName.contains("Drum")) {
+			 noteSize = getNoteListSizeDrum(score1);	
+		 }
+		 if(instrumentName.contains("Guitar")) {
+			 noteSize = getNoteListSizeGuitar(score1);	
+		 }
+		
 		
 		int notePosition[][] = new int[noteSize][2] ;
 		
+		//Make default position 20 and 20 is ignored while drawing notes
 		for (int i=0;i<noteSize;i++) {
 			notePosition[i][1]=20;
 		}
 		int notePositionIndexD1 =0;
 		int notePositionIndexD2 =0;
 		
-		
-		for(int i=0; i<measureList.size();i++) {
-			for (int j=0; j<measureList.get(i).getSortedNoteList().size();j++)
-			{	
-				int octiveInt = measureList.get(i).getSortedNoteList().get(j).getModel().getUnpitched().getDisplayOctave();
-				String octive = String.valueOf(octiveInt);
-				String note = measureList.get(i).getSortedNoteList().get(j).getModel().getUnpitched().getDisplayStep();
-				String type = measureList.get(i).getSortedNoteList().get(j).getModel().getType();
-				//String notehead= measureList.get(i).getSortedNoteList().get(j).getModel().getNotehead().toString();
-				if(measureList.get(i).getSortedNoteList().get(j).getModel().getChord()==null) 
-					{
-					notePositionIndexD2=0;
-					System.out.println("\n"+note +octive);
-					String noteWithOctive = note+octive;
-					//System.out.println(noteWithOctive);
-					int notePositionOnStaff = noteToNumber(noteWithOctive);
-					notePosition[notePositionIndexD1][notePositionIndexD2]=notePositionOnStaff;
-					notePositionIndexD1++;
-					System.out.println(notePositionOnStaff);
+		// Create Note list for Drum
+		if(instrumentName.contains("Drum")) {
+			
+			for(int i=0; i<measureList.size();i++) {
+				for (int j=0; j<measureList.get(i).getSortedNoteList().size();j++)
+				{	
+					if(measureList.get(i).getSortedNoteList().get(j).getModel()==null ||measureList.get(i).getSortedNoteList().get(j).getModel().getUnpitched()==null ) {
+			
 					}
-				else {
-					System.out.println(note+octive );
-					String noteWithOctive = note+octive;
-					int notePositionOnStaff = noteToNumber(noteWithOctive);
-					notePositionIndexD2=1;
-					notePositionIndexD1--;
-					notePosition[notePositionIndexD1][notePositionIndexD2]=notePositionOnStaff;
-					notePositionIndexD1++;
+					else {
+						int octiveInt = measureList.get(i).getSortedNoteList().get(j).getModel().getUnpitched().getDisplayOctave();
+						String octive = String.valueOf(octiveInt);
+						String note = measureList.get(i).getSortedNoteList().get(j).getModel().getUnpitched().getDisplayStep();
+						String type = measureList.get(i).getSortedNoteList().get(j).getModel().getType();
+						//String notehead= measureList.get(i).getSortedNoteList().get(j).getModel().getNotehead().toString();
+						if(measureList.get(i).getSortedNoteList().get(j).getModel().getChord()==null) 
+							{
+							notePositionIndexD2=0;
+							System.out.println("\n"+note +octive);
+							String noteWithOctive = note+octive;
+							//System.out.println(noteWithOctive);
+							int notePositionOnStaff = noteToNumber(noteWithOctive);
+							notePosition[notePositionIndexD1][notePositionIndexD2]=notePositionOnStaff;
+							notePositionIndexD1++;
+							System.out.println(notePositionOnStaff);
+							}
+						else {
+							System.out.println(note+octive );
+							String noteWithOctive = note+octive;
+							int notePositionOnStaff = noteToNumber(noteWithOctive);
+							notePositionIndexD2=1;
+							notePositionIndexD1--;
+							notePosition[notePositionIndexD1][notePositionIndexD2]=notePositionOnStaff;
+							notePositionIndexD1++;
+							
+						}
+				
+					}
+					
+					
+					
 					
 				}
 				
+			}
+		}
+		
+		//Create note list for Guitar
+		if(instrumentName.contains("Guitar")) {
+			
+			for(int i=0; i<measureList.size();i++) {
+				for (int j=0; j<measureList.get(i).getSortedNoteList().size();j++)
+				{	
+	  				int fret = measureList.get(i).getSortedNoteList().get(j).getModel().getNotations().getTechnical().getFret();	
+	  				int stringPosition = measureList.get(i).getSortedNoteList().get(j).getModel().getNotations().getTechnical().getString();
+					String type = measureList.get(i).getSortedNoteList().get(j).getModel().getType();
+					
+		/*			  if(measureList.get(i).getSortedNoteList().get(j).getModel().getChord()==null)
+					  {
+					 */
+						notePositionIndexD2=0;
+						System.out.println("\n"+fret +stringPosition);
 				
-				
+	
+						notePosition[notePositionIndexD1][notePositionIndexD2]=fret;
+						notePosition[notePositionIndexD1][notePositionIndexD2+1]=stringPosition;
+						notePositionIndexD1++;
+
+						/* } */
+			
+					
+					
+				}
 				
 			}
-			
 		}
+		
 		for (int i=0; i<notePosition.length;i++) {
 			for (int j=0; j<notePosition[i].length;j++) {
 				//System.out.println(notePosition[i][j]);
@@ -225,14 +364,18 @@ public class PrevSheetController extends Application {
 		
 		List<Part> partList = score1.getModel().getParts();
 		
-		System.out.println("score counts: "+score1.getModel().getScoreCount());
+		//System.out.println("score counts: "+score1.getModel().getScoreCount());
 		
 		
 		
 		clef = partList.get(0).getMeasures().get(0).getAttributes().clef.sign;
-		//String printStr2 = score.getModel().getParts().get(0).getId();
-		//int printInt = score.getModel().getPartList().getScoreParts().size();
-		System.out.printf("clef of this music sheet: %s", clef);
+		
+		
+		
+		System.out.printf("clef of this music sheet: %s \n", clef);
+		System.out.printf("instrument: %s \n", instrumentName);
+		
+		
 		return notePosition;
 		
     }

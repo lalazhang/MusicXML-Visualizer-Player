@@ -36,6 +36,10 @@
     -fx-background-color: rgb(50,50,50);
 
 }
+#borderPaneCode {
+    -fx-background-color: rgb(256,256,256);
+
+}
 
 #tabPlayerDisplay {
     -fx-font-family: Monospaced;

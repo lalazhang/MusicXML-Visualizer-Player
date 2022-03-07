@@ -46,33 +46,44 @@ import utility.Settings;
 import utility.XmlPlayer;
 
 public class MainViewController extends Application {
-	
+
 	private Preferences prefs;
 	public static ExecutorService executor = Executors.newSingleThreadExecutor();
 	public File saveFile;
 	private static boolean isEditingSavedFile;
-	
+
 	public Window convertWindow;
 	public Window settingsWindow;
 	public XmlPlayer mpl;
 	public Highlighter highlighter;
 	public Converter converter;
 
-	@FXML  Label mainViewState;
-	@FXML  TextField instrumentMode;
-	
-	@FXML public CodeArea mainText;
+	@FXML
+	Label mainViewState;
+	@FXML
+	TextField instrumentMode;
 
-	@FXML  TextField gotoMeasureField;
-	@FXML  BorderPane borderPane;
-	@FXML  Button saveTabButton;
-	@FXML  Button saveMXLButton;
-	@FXML  Button showMXLButton;
-	@FXML  Button previewButton;
-	@FXML  Button playButton;
-	@FXML  Button goToline;
-	@FXML  ComboBox<String> cmbScoreType;
+	@FXML
+	public CodeArea mainText;
 
+	@FXML
+	TextField gotoMeasureField;
+	@FXML
+	BorderPane borderPane;
+	@FXML
+	Button saveTabButton;
+	@FXML
+	Button saveMXLButton;
+	@FXML
+	Button showMXLButton;
+	@FXML
+	Button previewButton;
+	@FXML
+	Button playButton;
+	@FXML
+	Button goToline;
+	@FXML
+	ComboBox<String> cmbScoreType;
 
 	public MainViewController() {
 		Settings s = Settings.getInstance();
@@ -84,19 +95,20 @@ public class MainViewController extends Application {
 		s.errorSensitivity = Integer.parseInt(prefs.get("errorSensitivity", "4"));
 	}
 
-	@FXML 
+	@FXML
 	public void initialize() throws Exception {
 		mainText.setParagraphGraphicFactory(LineNumberFactory.get(mainText));
 		converter = new Converter(this);
 		highlighter = new Highlighter(this, converter);
-    	listenforTextAreaChanges();
+		listenforTextAreaChanges();
 	}
 
 	@FXML
 	private void handleCurrentSongSettings() {
 		Parent root;
 		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GUI/currentSongSettingsWindow.fxml"));
+			FXMLLoader loader = new FXMLLoader(
+					getClass().getClassLoader().getResource("GUI/currentSongSettingsWindow.fxml"));
 			root = loader.load();
 			CurrentSongSettingsWindowController controller = loader.getController();
 			controller.setMainViewController(this);
@@ -106,12 +118,13 @@ public class MainViewController extends Application {
 			logger.log(Level.SEVERE, "Failed to create new Window.", e);
 		}
 	}
-	
+
 	@FXML
 	private void handleSystemDefaultSettings() {
 		Parent root;
 		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GUI/systemDefaultSettingsWindow.fxml"));
+			FXMLLoader loader = new FXMLLoader(
+					getClass().getClassLoader().getResource("GUI/systemDefaultSettingsWindow.fxml"));
 			root = loader.load();
 			SystemDefaultSettingsWindowController controller = loader.getController();
 			controller.setMainViewController(this);
@@ -125,7 +138,8 @@ public class MainViewController extends Application {
 	@FXML
 	private void handleNew() {
 		boolean userOkToGoAhead = promptSave();
-		if (!userOkToGoAhead) return;
+		if (!userOkToGoAhead)
+			return;
 		this.mainText.clear();
 		instrumentMode.setText("None");
 		isEditingSavedFile = false;
@@ -134,16 +148,17 @@ public class MainViewController extends Application {
 	@FXML
 	private void handleOpen() {
 		boolean userOkToGoAhead = promptSave();
-		if (!userOkToGoAhead) return;
+		if (!userOkToGoAhead)
+			return;
 
 		String startFolder = prefs.get("inputFolder", System.getProperty("user.home"));
 		File openDirectory;
-		if (saveFile!=null && saveFile.canRead()) {
+		if (saveFile != null && saveFile.canRead()) {
 			openDirectory = new File(saveFile.getParent());
-		}else
+		} else
 			openDirectory = new File(startFolder);
 
-		if(!openDirectory.canRead()) {
+		if (!openDirectory.canRead()) {
 			openDirectory = new File("c:/");
 		}
 
@@ -151,12 +166,13 @@ public class MainViewController extends Application {
 		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
 		fileChooser.setInitialDirectory(openDirectory);
 		File openedFile = fileChooser.showOpenDialog(MainApp.STAGE);
-		if (openedFile==null) return;
+		if (openedFile == null)
+			return;
 		if (openedFile.exists()) {
 			try {
 				String newText = Files.readString(Path.of(openedFile.getAbsolutePath())).replace("\r\n", "\n");
 				mainText.replaceText(new IndexRange(0, mainText.getText().length()), newText);
-			}catch (Exception e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -172,13 +188,14 @@ public class MainViewController extends Application {
 		fileChooser.setTitle("Save As");
 		fileChooser.setInitialDirectory(new File(Settings.getInstance().outputFolder));
 		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
-		if (saveFile!=null) {
+		if (saveFile != null) {
 			fileChooser.setInitialFileName(saveFile.getName());
 			fileChooser.setInitialDirectory(new File(saveFile.getParent()));
 		}
 
 		File newSaveFile = fileChooser.showSaveDialog(MainApp.STAGE);
-		if (newSaveFile==null) return false;
+		if (newSaveFile == null)
+			return false;
 		try {
 			FileWriter myWriter = new FileWriter(newSaveFile.getPath());
 			myWriter.write(mainText.getText());
@@ -194,7 +211,7 @@ public class MainViewController extends Application {
 
 	@FXML
 	private boolean handleSave() {
-		if (!isEditingSavedFile || saveFile==null || !saveFile.exists())
+		if (!isEditingSavedFile || saveFile == null || !saveFile.exists())
 			return this.handleSaveAs();
 		try {
 			FileWriter myWriter = new FileWriter(saveFile.getPath());
@@ -208,13 +225,17 @@ public class MainViewController extends Application {
 
 	private boolean promptSave() {
 
-		//we don't care about overwriting a blank file. If file is blank, we are ok to go. it doesn't matter if it is saved or not
-		if (mainText.getText().isBlank())  return true;
+		// we don't care about overwriting a blank file. If file is blank, we are ok to
+		// go. it doesn't matter if it is saved or not
+		if (mainText.getText().isBlank())
+			return true;
 
 		try {
-			if (saveFile!=null && Files.readString(Path.of(saveFile.getAbsolutePath())).replace("\r\n", "\n").equals(mainText.getText()))
-				return true;    //if file didn't change, we are ok to go. no need to save anything, no chance of overwriting.
-		}catch (Exception e){
+			if (saveFile != null && Files.readString(Path.of(saveFile.getAbsolutePath())).replace("\r\n", "\n")
+					.equals(mainText.getText()))
+				return true; // if file didn't change, we are ok to go. no need to save anything, no chance
+								// of overwriting.
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -232,11 +253,11 @@ public class MainViewController extends Application {
 		Optional<ButtonType> result = alert.showAndWait();
 
 		boolean userOkToGoAhead = false;
-		if (result.get() == buttonTypeSave){
+		if (result.get() == buttonTypeSave) {
 			boolean saved;
 			if (isEditingSavedFile) {
 				saved = handleSave();
-			}else {
+			} else {
 				saved = handleSaveAs();
 			}
 			if (saved)
@@ -245,7 +266,7 @@ public class MainViewController extends Application {
 			// ... user chose "Override". we are good to go ahead
 			userOkToGoAhead = true;
 		}
-		//if user chose "cancel", userOkToGoAhead is still false. we are ok.
+		// if user chose "cancel", userOkToGoAhead is still false. we are ok.
 		return userOkToGoAhead;
 	}
 
@@ -275,7 +296,7 @@ public class MainViewController extends Application {
 			logger.log(Level.SEVERE, "Failed to create new Window.", e);
 		}
 	}
-	
+
 	@FXML
 	void saveMXLButtonHandle() {
 		Parent root;
@@ -290,7 +311,7 @@ public class MainViewController extends Application {
 			logger.log(Level.SEVERE, "Failed to create new Window.", e);
 		}
 	}
-	
+
 	@FXML
 	private void showMXLButtonHandle() {
 		Parent root;
@@ -308,41 +329,39 @@ public class MainViewController extends Application {
 	}
 
 	@FXML
-	private void previewButtonHandle() throws IOException, TXMLException {
+	private void previewButtonHandle() throws Exception {
 //		System.out.println("Preview Button Clicked!");
 		// converter.getMusicXML() returns the MusicXML output as a String
-		
-		/*XmlDocument music = new XmlDocument();
-		music.LoadXml(converter.getMusicXML()); 
-		I was trying to figure out how to convert getMusicXML() to an xml document.
-		https://stackoverflow.com/questions/40242941/load-xml-file-after-reading-in-string
-		https://howtodoinjava.com/java/xml/parse-string-to-xml-dom/
-		Maybe the above links could help us?
-		*/
-		
+
+		/*
+		 * XmlDocument music = new XmlDocument();
+		 * music.LoadXml(converter.getMusicXML()); I was trying to figure out how to
+		 * convert getMusicXML() to an xml document.
+		 * https://stackoverflow.com/questions/40242941/load-xml-file-after-reading-in-
+		 * string https://howtodoinjava.com/java/xml/parse-string-to-xml-dom/ Maybe the
+		 * above links could help us?
+		 */
+
 		Parent root;
-		try {
+		
+		
+		
 			Stage stage = new Stage();
-			FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GUI/PreviewSheetView.fxml"));
-			root = loader.load();
-			
-			PrevSheetController controller = loader.getController();
+//			FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GUI/PreviewSheetView.fxml"));
+//			root = loader.load();
+//			stage.getScene().getRoot();
+			PrevSheetController controller = new PrevSheetController();
 			controller.setMainViewController(this);
 			controller.printMusicXml();
+
 			try {
 				controller.start(stage);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-	
-			convertWindow = this.openNewWindow(root, "Sheet music output");
-		} catch (IOException e) {
-			Logger logger = Logger.getLogger(getClass().getName());
-			logger.log(Level.SEVERE, "Failed to create new Window.", e);
-		}
-		
-		
+
+
 	}
 
 	@FXML
@@ -353,25 +372,24 @@ public class MainViewController extends Application {
 			FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GUI/tabPlayer.fxml"));
 			root = loader.load();
 			PlayMusicController controller = loader.getController();
-			
+
 			controller.setMainViewController(this, converter.getMusicXML());
-			
+
 			convertWindow = this.openNewWindow(root, "Music Player");
 		} catch (IOException e) {
 			Logger logger = Logger.getLogger(getClass().getName());
 			logger.log(Level.SEVERE, "Failed to create new Window.", e);
 		}
-		
-		
+
 	}
 
 	public void refresh() {
-        mainText.replaceText(new IndexRange(0, mainText.getText().length()), mainText.getText()+" ");
-    }
+		mainText.replaceText(new IndexRange(0, mainText.getText().length()), mainText.getText() + " ");
+	}
 
 	@FXML
 	private void handleGotoMeasure() {
-		int measureNumber = Integer.parseInt( gotoMeasureField.getText() );
+		int measureNumber = Integer.parseInt(gotoMeasureField.getText());
 		if (!goToMeasure(measureNumber)) {
 			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setContentText("Measure " + measureNumber + " could not be found.");
@@ -379,66 +397,61 @@ public class MainViewController extends Application {
 			alert.show();
 		}
 	}
-	
-    private boolean goToMeasure(int measureCount) {
-        TabMeasure measure = converter.getScore().getMeasure(measureCount);
-        if (measure == null) return false;
-        List<Range> linePositions = measure.getRanges();
-        int pos = linePositions.get(0).getStart();
-    	mainText.moveTo(pos);
-        mainText.requestFollowCaret();
-        mainText.requestFocus();
-        return true;
-    }
 
-    public void listenforTextAreaChanges() {
-        //Subscription cleanupWhenDone = 
-    	mainText.multiPlainChanges()
-                .successionEnds(Duration.ofMillis(350))
-                .supplyTask(this::update)
-                .awaitLatest(mainText.multiPlainChanges())
-                .filterMap(t -> {
-                    if(t.isSuccess()) {
-                        return Optional.of(t.get());
-                    } else {
-                        t.getFailure().printStackTrace();
-                        return Optional.empty();
-                    }
-                })
-                .subscribe(highlighter::applyHighlighting);
-    }
-    
-    public Task<StyleSpans<Collection<String>>> update() {
-    	String text = mainText.getText();
+	private boolean goToMeasure(int measureCount) {
+		TabMeasure measure = converter.getScore().getMeasure(measureCount);
+		if (measure == null)
+			return false;
+		List<Range> linePositions = measure.getRanges();
+		int pos = linePositions.get(0).getStart();
+		mainText.moveTo(pos);
+		mainText.requestFollowCaret();
+		mainText.requestFocus();
+		return true;
+	}
 
-        Task<StyleSpans<Collection<String>>> task = new Task<>() {
-            @Override
-            protected StyleSpans<Collection<String>> call() {
-            	converter.update();
-            	
-                if (converter.getScore().getTabSectionList().isEmpty()){
-                	saveMXLButton.setDisable(true);
-                	previewButton.setDisable(true);
-                	showMXLButton.setDisable(true);
-                	//saveTabButton.setDisable(true);
-                	playButton.setDisable(true);
-                }
-                else
-                {
-                	saveMXLButton.setDisable(false);
-                	previewButton.setDisable(false);
-                	showMXLButton.setDisable(false);
-                	//saveTabButton.setDisable(false);
-                	playButton.setDisable(false);
-                }
-                return highlighter.computeHighlighting(text);
-            }
-        };
-        executor.execute(task);
-        task.isDone();
-        return task;
-    }
-    
+	public void listenforTextAreaChanges() {
+		// Subscription cleanupWhenDone =
+		mainText.multiPlainChanges().successionEnds(Duration.ofMillis(350)).supplyTask(this::update)
+				.awaitLatest(mainText.multiPlainChanges()).filterMap(t -> {
+					if (t.isSuccess()) {
+						return Optional.of(t.get());
+					} else {
+						t.getFailure().printStackTrace();
+						return Optional.empty();
+					}
+				}).subscribe(highlighter::applyHighlighting);
+	}
+
+	public Task<StyleSpans<Collection<String>>> update() {
+		String text = mainText.getText();
+
+		Task<StyleSpans<Collection<String>>> task = new Task<>() {
+			@Override
+			protected StyleSpans<Collection<String>> call() {
+				converter.update();
+
+				if (converter.getScore().getTabSectionList().isEmpty()) {
+					saveMXLButton.setDisable(true);
+					previewButton.setDisable(true);
+					showMXLButton.setDisable(true);
+					// saveTabButton.setDisable(true);
+					playButton.setDisable(true);
+				} else {
+					saveMXLButton.setDisable(false);
+					previewButton.setDisable(false);
+					showMXLButton.setDisable(false);
+					// saveTabButton.setDisable(false);
+					playButton.setDisable(false);
+				}
+				return highlighter.computeHighlighting(text);
+			}
+		};
+		executor.execute(task);
+		task.isDone();
+		return task;
+	}
+
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 
