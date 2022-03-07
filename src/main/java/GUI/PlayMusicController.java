@@ -3,7 +3,7 @@ package GUI;
 import java.util.Timer;
 import java.util.TimerTask;
 
-
+import custom_exceptions.TXMLException;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -34,7 +34,7 @@ public class PlayMusicController extends Application {
 	 */
 	private MainViewController mvc;
 	/**
-	 * XmlPlayer object to use xmlplayer functionality 
+	 * XmlPlayer object to use xmlplayer functionality
 	 */
 	private XmlPlayer mp;
 	/**
@@ -42,12 +42,12 @@ public class PlayMusicController extends Application {
 	 */
 	private String xmlstr;
 	private static Window convertWindow = new Stage();
-	private float time,temp;
+	private float time, temp;
 	private boolean playing;
 	private Timer timer;
 	private TimerTask task;
 	@FXML
-	Button playButton;
+	Button playMusic;
 	@FXML
 	Button pauseButton;
 	@FXML
@@ -58,11 +58,11 @@ public class PlayMusicController extends Application {
 	Label tempLabelL;
 	@FXML
 	Label tempLabelH;
-	@FXML 
+	@FXML
 	Label labelTimeEnd;
-	@FXML 
+	@FXML
 	Label labelTimeCur;
-	@FXML 
+	@FXML
 	ProgressBar songPB;
 
 	@Override
@@ -72,8 +72,8 @@ public class PlayMusicController extends Application {
 	}
 
 	/**
-	 * Creates mvc instance using main view mvc and takes the converted 
-	 * xml string from main view to play score
+	 * Creates mvc instance using main view mvc and takes the converted xml string
+	 * from main view to play score
 	 * 
 	 * @param mvcInput
 	 * @param str
@@ -82,13 +82,22 @@ public class PlayMusicController extends Application {
 	public void setMainViewController(MainViewController mvcInput, String str) throws Exception {
 		mvc = mvcInput;
 		xmlstr = str;
-//		System.out.println(mvc.converter.getScore().getModel().getPartList().getScoreParts().get(0).getPartName());
-		mp = new XmlPlayer(xmlstr, mvc.converter.getScore().getModel().getPartList().getScoreParts().get(0).getPartName());
+
+//		for(int i=0; i<mvc.converter.getScore().getMeasureList().size();i++) {
+//			System.out.println("Measure: "+i);
+//			for (int j=0; j<mvc.converter.getScore().getMeasureList().get(i).tabStringList.size();j++)
+//			
+//			{
+////		System.out.println(mvc.converter.getScore().getMeasureList().get(0).tabStringList.get(0).getNoteList().get(i).getModel().getChord());
+
+//			}
+//		}
+		mp = new XmlPlayer(mvc, xmlstr);
 		labelTimeCur.setText("00:00");
-		
+
 	}
 //	converter.getScore().getModel(); PartList pl = sp.getPartList(); pl.getScoreParts().get(0).getPartName();
-	
+
 	@FXML
 	public void initialize() throws Exception {
 //		Image vol1 = new Image(getClass().getClassLoader().getResource("image_assets/Low-Volume-icon.png").toString());
@@ -98,56 +107,55 @@ public class PlayMusicController extends Application {
 		songPB.setMinWidth(songSlider.getMaxWidth());
 		songPB.setMaxWidth(songSlider.getMaxWidth());
 		songSlider.valueChangingProperty().addListener(new ChangeListener<Boolean>() {
-	            @Override
-	            public void changed(ObservableValue<? extends Boolean> observableValue, Boolean wasChanging, Boolean isChanging) {
-	            	time = (float)songSlider.getValue()/100.0f;
-	                if (!isChanging) {
-	                   
-	                   mp.seek(time);
-	                }
-	            }
-	        });
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observableValue, Boolean wasChanging,
+					Boolean isChanging) {
+				time = (float) songSlider.getValue() / 100.0f;
+				if (!isChanging) {
+
+					mp.seek(time);
+				}
+			}
+		});
 		songSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-			time = newValue.floatValue()/100.0f;
-			songPB.setProgress(newValue.doubleValue()/100);
-			
-			if (mp.getManagedPlayer().isStarted()){
+			time = newValue.floatValue() / 100.0f;
+			songPB.setProgress(newValue.doubleValue() / 100);
+
+			if (mp.getManagedPlayer().isStarted()) {
 				labelTimeCur.setText(mp.getCurTime());
 				labelTimeEnd.setText(mp.getDuration());
-//				System.out.println(mp.getManagedPlayer());
+
 				long cur = mp.getManagedPlayer().getTickPosition();
 				long dur = mp.getManagedPlayer().getTickLength();
-				 if (Math.abs(cur - (time*dur)) > 0.5) {
-//					 mp.seek(time);
-	                }
-				
-//				System.out.println(mp.getManagedPlayer().getTickPosition()/(double)mp.getManagedPlayer().getTickLength()*100.0);
-//				songSlider.setValue(mp.getManagedPlayer().getTickPosition()/(double)mp.getManagedPlayer().getTickLength()*100.0);
+				if (Math.abs(newValue.doubleValue() - (oldValue.doubleValue())) > 1.4) {
+//					mp.seek(time);
+				}
 			}
 		});
-		
-		
-		
+
 		tempSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
 			temp = newValue.floatValue();
-			
-			if (mp.getManagedPlayer().isStarted()) {
+			if (mp.inst.equals("Guitar")) {
+				if (mp.getManagedPlayer().isStarted()) {
 
-				try {
-					mp.setTempo(temp);
-					labelTimeCur.setText(mp.getCurTime());
-					labelTimeEnd.setText(mp.getDuration());
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					try {
+
+						labelTimeCur.setText(mp.getCurTime());
+						labelTimeEnd.setText(mp.getDuration());
+						mp.setTempo(temp);
+
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
 				}
-				System.out.println(mp.getTempo());
-//				System.out.println(mp.getManagedPlayer().getTickPosition()/(double)mp.getManagedPlayer().getTickLength()*100.0);
-//				songSlider.setValue(mp.getManagedPlayer().getTickPosition()/(double)mp.getManagedPlayer().getTickLength()*100.0);
-				
+			} else {
+				//TODO set tempo for drumset playback
+
 			}
 		});
-		
+
 	}
 
 	@FXML
@@ -156,42 +164,73 @@ public class PlayMusicController extends Application {
 		mvc.converter.update();
 		mp.play();
 		beginTimer();
-		
+
 //		while(mp.getManagedPlayer().isPlaying()) {
 //			songSlider.setValue(mp.getManagedPlayer().getTickPosition()/(double)mp.getManagedPlayer().getTickLength()*100.0);
 //		}
 
 	}
-	
+
 	public void beginTimer() {
-		playing = mp.getManagedPlayer().isPlaying();
+		playing = true;
 		
 		timer = new Timer();
 		task = new TimerTask() {
 			public void run() {
-				long cur = mp.getManagedPlayer().getTickPosition();
-				long dur = mp.getManagedPlayer().getTickLength();
+				if (mp.getManagedPlayer().isStarted()) {
+					long cur = mp.getManagedPlayer().getTickPosition();
+					long dur = mp.getManagedPlayer().getTickLength();
+//				System.out.println(cur+" <-pos len-> "+dur);
 //				labelTimeCur.setText(mp.getCurTime());
-				if (cur/dur==1) {
-					cancelTimer();
+					if (dur != 0 && (cur / dur == 1)) {
+						cancelTimer();
+					}
+					Platform.runLater(new Runnable() {
+						@Override
+						public void run() {
+							try {
+								if (mvc.converter.getScore().getModel().getPartList().getScoreParts().get(0)
+										.getPartName().equals("Guitar")) {
+
+									labelTimeCur.setText(mp.getCurTime());
+									labelTimeEnd.setText(mp.getDuration());
+									if (dur != 0) {
+										songSlider.setValue(((double) cur / (double) dur) * 100);
+									}
+								} else {
+
+									if (dur != 0) {
+										songSlider.setValue(((double) cur / (double) dur) * 100);
+									}
+								}
+							} catch (TXMLException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+					});
 				}
-				Platform.runLater(new Runnable() {
-		            @Override
-		            public void run() {
-		            	labelTimeCur.setText(mp.getCurTime());
-		            	labelTimeEnd.setText(mp.getDuration());
-		            	songSlider.setValue(((double)cur/(double)dur)*100);
-		            }
-		        });
-				
 			}
+
 		};
 		timer.scheduleAtFixedRate(task, 1000, 1000);
+	}
+	
+	public void playMusicHandleTest() throws Exception {
+
+		mvc.converter.update();
+		mp.play();
+		beginTimer();
+		
 	}
 	
 	public void cancelTimer() {
 		playing = false;
 		timer.cancel();
+	}
+	
+	public boolean getPlaying() {
+		return playing;
 	}
 
 	@FXML
@@ -200,6 +239,10 @@ public class PlayMusicController extends Application {
 		timer.cancel();
 	}
 
+	public void setBPM(double bpm) {
+		tempSlider.setValue(bpm);
+	}
+	
 	@FXML
 	private void exit() {
 		mp.getManagedPlayer().finish();

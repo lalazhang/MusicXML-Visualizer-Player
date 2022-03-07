@@ -17,10 +17,12 @@ import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
+
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -38,7 +40,9 @@ public class PrevSheetController extends Application {
 	//public VBox myVBox;
 	
 	public String clef;
+
 	private String instrumentName;
+
 	@FXML 
 	public void initialize() {
 		//mxlTextPre.setParagraphGraphicFactory(LineNumberFactory.get(mxlTextPre));
@@ -47,9 +51,11 @@ public class PrevSheetController extends Application {
 		//myVBox.setStyle("-fx-border-color: red");
 		//String musicXml = mvc.converter.getMusicXML();
 		//System.out.println(musicXml);
+
 		
 		Dot01 test = new Dot01();
 		test.view();
+
 	}
 	@Override
 	
@@ -77,6 +83,7 @@ public class PrevSheetController extends Application {
 		
 		box.getChildren().add(instrumentNameTitle);
 		
+
 		//Draw Staff
 		if(instrumentName.contains("Drum")) {
 			drawStaff5(box);
@@ -91,6 +98,7 @@ public class PrevSheetController extends Application {
 		
 		//draw clef and Drum notes
 		System.out.println(clef);
+
 		if(clef.matches("percussion")) {
 			Line line1 = new Line(105,220,105,240);
 			Line line2 = new Line(110,220,110,240);
@@ -98,6 +106,8 @@ public class PrevSheetController extends Application {
 			line2.setStrokeWidth(4);
 			box.getChildren().add(line2);
 			box.getChildren().add(line1);
+      
+
 			System.out.printf("drum note span size" + String.valueOf(noteSpanSize.length));
 			for (int i=0; i<noteSpanSize.length;i++) {
 //				for(int ii=0;i<i%30;ii++) {
@@ -146,6 +156,7 @@ public class PrevSheetController extends Application {
 			}
 
 
+
 		}
 		Scene scene = new Scene(box,1000,600,Color.AZURE);
 		
@@ -165,6 +176,7 @@ public class PrevSheetController extends Application {
 		
     	mvc = mvcInput;
     	
+
     }
     
     public void drawStaff5(Group box) {
@@ -383,6 +395,7 @@ public class PrevSheetController extends Application {
     public int noteToNumber (String noteWithOctive) {
     	// noteNumber indicates the location of the note on staff
     	System.out.print(noteWithOctive);
+
     	int noteNumber=0;
     	//noteNumber set as 0 means E4 so it sits on the bottom line of 5 staff lines
     	if (noteWithOctive.matches("C4")){   	
