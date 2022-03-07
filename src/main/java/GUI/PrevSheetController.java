@@ -17,6 +17,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -99,7 +100,7 @@ public class PrevSheetController extends Application {
 		}
 		
 		//draw clef
-		System.out.println(clef);
+//		System.out.println(clef);
 		if(clef.matches("percussion")) {
 			Line line1 = new Line(105,220,105,240);
 			Line line2 = new Line(110,220,110,240);
@@ -110,7 +111,6 @@ public class PrevSheetController extends Application {
 
 
 		}
-		
 		Scene scene = new Scene(box,1000,600,Color.AZURE);
 		
 		primaryStage.setTitle("music sheet");
@@ -142,7 +142,7 @@ public class PrevSheetController extends Application {
 		
 		Score score1 = mvc.converter.getScore();
 		
-		System.out.println(musicXml);
+//		System.out.println(musicXml);
 		//Score score = new Score(musicXml);
 		
 		int scoreMeasureListSize = mvc.converter.getScore().getMeasureList().size();
@@ -189,16 +189,16 @@ public class PrevSheetController extends Application {
 				if(measureList.get(i).getSortedNoteList().get(j).getModel().getChord()==null) 
 					{
 					notePositionIndexD2=0;
-					System.out.println("\n"+note +octive);
+//					System.out.println("\n"+note +octive);
 					String noteWithOctive = note+octive;
 					//System.out.println(noteWithOctive);
 					int notePositionOnStaff = noteToNumber(noteWithOctive);
 					notePosition[notePositionIndexD1][notePositionIndexD2]=notePositionOnStaff;
 					notePositionIndexD1++;
-					System.out.println(notePositionOnStaff);
+//					System.out.println(notePositionOnStaff);
 					}
 				else {
-					System.out.println(note+octive );
+//					System.out.println(note+octive );
 					String noteWithOctive = note+octive;
 					int notePositionOnStaff = noteToNumber(noteWithOctive);
 					notePositionIndexD2=1;
@@ -220,26 +220,26 @@ public class PrevSheetController extends Application {
 			}
 			
 		}
-		System.out.println("note size: "+ noteSize);
+//		System.out.println("note size: "+ noteSize);
 		int printStr11 = score1.getMeasureList().size();
 		
 		List<Part> partList = score1.getModel().getParts();
 		
-		System.out.println("score counts: "+score1.getModel().getScoreCount());
+//		System.out.println("score counts: "+score1.getModel().getScoreCount());
 		
 		
 		
 		clef = partList.get(0).getMeasures().get(0).getAttributes().clef.sign;
 		//String printStr2 = score.getModel().getParts().get(0).getId();
 		//int printInt = score.getModel().getPartList().getScoreParts().size();
-		System.out.printf("clef of this music sheet: %s", clef);
+//		System.out.printf("clef of this music sheet: %s", clef);
 		return notePosition;
 		
     }
     
     public int noteToNumber (String noteWithOctive) {
     	// noteNumber indicates the location of the note on staff
-    	System.out.print(noteWithOctive);
+//    	System.out.print(noteWithOctive);
     	int noteNumber=0;
     	//noteNumber set as 0 means E4 so it sits on the bottom line of 5 staff lines
     	if (noteWithOctive.matches("C4")){   	
