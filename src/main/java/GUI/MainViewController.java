@@ -353,13 +353,14 @@ public class MainViewController extends Application {
 			PrevSheetController controller = new PrevSheetController();
 			controller.setMainViewController(this);
 			controller.printMusicXml();
-			controller.start(stage);
 
-//			convertWindow = this.openNewWindow(root, "Sheet music output");
-		} catch (IOException e) {
-			Logger logger = Logger.getLogger(getClass().getName());
-			logger.log(Level.SEVERE, "Failed to create new Window.", e);
-		}
+			try {
+				controller.start(stage);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 
 	}
 
