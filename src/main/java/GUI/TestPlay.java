@@ -73,21 +73,35 @@ public class TestPlay {
 //	            }
 	        
 	        Rhythm rhythm = new Rhythm();
-//	        rhythm.addLayer("O.OO...O.OO....O");
-	        rhythm.addLayer("oo..o....oo...");
-	        rhythm.addLayer("^.`.^.`.^.`.^.`.");
+	        rhythm.addLayer("O.OO...O.OO....O");
+//	        rhythm.addLayer("....o.......o...");
+//	        rhythm.addLayer("^.`.^.`.^.`.^.`.");
 	       
 	            Player player = new Player();
 	            
-	            player.play(rhythm.getPattern().repeat(4));
+//	            player.play(rhythm.getPattern().repeat(4));
 //	           stLis.getPattern().setTempo(230); 
 //		        player.play(stLis.getPattern());
 		      
 	            
 //	            System.out.println(listener.getSequence().getTickLength());
-	        System.out.println(rhythm.getPattern());
+	        System.out.println(rhythm);
+	        Rhythm rhythm2 = new Rhythm();
+	        rhythm2.addLayer("oo..o.........");
+//	        rhythm2.addLayer("^.`.^.`.^.`.^.`.");
+	        
+	        Pattern pat = rhythm.getPattern();
+	        pat.add(rhythm2.getPattern());
+	        System.out.println(rhythm.getStaccatoStringForRhythm("oo..o....oo..."));
+//	        System.out.println(staccatoPattern);
+	        String lay ="";
+	        for(int i=0 ;i<rhythm.getLayers().size();i++) {
+	        	lay=lay+" L"+i+" "+rhythm.getLayers().get(i);
+	        }
+	        System.out.println(pat);
+	       
 //	        Player player = new Player();
-//	        player.play(staccatoPattern);
+	        player.play(pat);
 	    }
 	
 
