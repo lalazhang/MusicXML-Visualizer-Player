@@ -3,6 +3,7 @@ package GUI;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import custom_exceptions.TXMLException;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -81,14 +82,17 @@ public class PlayMusicController extends Application {
 	public void setMainViewController(MainViewController mvcInput, String str) throws Exception {
 		mvc = mvcInput;
 		xmlstr = str;
-		
-		for (int i=0; i<mvc.converter.getScore().getMeasureList().get(0).tabStringList.size();i++ ) {
-//		System.out.println(mvc.converter.getScore().getMeasureList().get(0).tabStringList.get(0).getNoteList().get(i).getModel().getChord());
-		System.out.println(mvc.converter.getScore().getMeasureList().get(0).tabStringList.get(i).name);
-		System.out.println(mvc.converter.getScore().getMeasureList().get(0).tabStringList.get(i).line);
-		}
-		mp = new XmlPlayer(xmlstr,
-				mvc.converter.getScore().getModel().getPartList().getScoreParts().get(0).getPartName());
+
+//		for(int i=0; i<mvc.converter.getScore().getMeasureList().size();i++) {
+//			System.out.println("Measure: "+i);
+//			for (int j=0; j<mvc.converter.getScore().getMeasureList().get(i).tabStringList.size();j++)
+//			
+//			{
+////		System.out.println(mvc.converter.getScore().getMeasureList().get(0).tabStringList.get(0).getNoteList().get(i).getModel().getChord());
+
+//			}
+//		}
+		mp = new XmlPlayer(mvc, xmlstr);
 		labelTimeCur.setText("00:00");
 
 	}
@@ -123,37 +127,31 @@ public class PlayMusicController extends Application {
 
 				long cur = mp.getManagedPlayer().getTickPosition();
 				long dur = mp.getManagedPlayer().getTickLength();
-//				System.out.println("Current song time: "+cur+" song duration: "+dur);
-//				System.out.println("sliderDiff: " +Math.abs(newValue.doubleValue() - (oldValue.doubleValue()))+" SongDiff: "+Math.abs(cur - (time*dur)));
 				if (Math.abs(newValue.doubleValue() - (oldValue.doubleValue())) > 1.4) {
 //					mp.seek(time);
 				}
-
-//				System.out.println(mp.getManagedPlayer().getTickPosition()/(double)mp.getManagedPlayer().getTickLength()*100.0);
-//				songSlider.setValue(mp.getManagedPlayer().getTickPosition()/(double)mp.getManagedPlayer().getTickLength()*100.0);
 			}
 		});
 
 		tempSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
 			temp = newValue.floatValue();
+			if (mp.inst.equals("Guitar")) {
+				if (mp.getManagedPlayer().isStarted()) {
 
-			if (mp.getManagedPlayer().isStarted()) {
+					try {
 
-				try {
+						labelTimeCur.setText(mp.getCurTime());
+						labelTimeEnd.setText(mp.getDuration());
+						mp.setTempo(temp);
 
-					labelTimeCur.setText(mp.getCurTime());
-					labelTimeEnd.setText(mp.getDuration());
-//					System.out.println(oldValue+ " <-- old value new value --> "+ newValue);
-					mp.setTempo(temp);
-					labelTimeCur.setText(mp.getCurTime());
-					labelTimeEnd.setText(mp.getDuration());
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
 				}
-//				System.out.println(mp.getTempo());
-//				System.out.println(mp.getManagedPlayer().getTickPosition()/(double)mp.getManagedPlayer().getTickLength()*100.0);
-//				songSlider.setValue(mp.getManagedPlayer().getTickPosition()/(double)mp.getManagedPlayer().getTickLength()*100.0);
+			} else {
+				//TODO set tempo for drumset playback
 
 			}
 		});
@@ -190,11 +188,24 @@ public class PlayMusicController extends Application {
 					Platform.runLater(new Runnable() {
 						@Override
 						public void run() {
+							try {
+								if (mvc.converter.getScore().getModel().getPartList().getScoreParts().get(0)
+										.getPartName().equals("Guitar")) {
 
-							labelTimeCur.setText(mp.getCurTime());
-							labelTimeEnd.setText(mp.getDuration());
-							if (dur != 0) {
-								songSlider.setValue(((double) cur / (double) dur) * 100);
+									labelTimeCur.setText(mp.getCurTime());
+									labelTimeEnd.setText(mp.getDuration());
+									if (dur != 0) {
+										songSlider.setValue(((double) cur / (double) dur) * 100);
+									}
+								} else {
+
+									if (dur != 0) {
+										songSlider.setValue(((double) cur / (double) dur) * 100);
+									}
+								}
+							} catch (TXMLException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
 							}
 						}
 					});
