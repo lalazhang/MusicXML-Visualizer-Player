@@ -143,12 +143,12 @@ public class PlayMusicTest extends ApplicationTest {
 	public void testBPM(FxRobot robot) throws Exception {
 		//Test case to make sure the BPM slider actually changes the BPM
         robot.clickOn("#mainText");
-        robot.write("CC|x---------------|--------x-------|\r\n"
-        		+ "HH|--x-x-x-x-x-x-x-|----------------|\r\n"
-        		+ "SD|----o-------o---|oooo------------|\r\n"
-        		+ "HT|----------------|----oo----------|\r\n"
-        		+ "MT|----------------|------oo--------|\r\n"
-        		+ "BD|o-------o-------|o-------o-------|", 0);
+        robot.write("|-----------0-----|-0---------------|\r\n"
+        		+ "|---------0---0---|-0---------------|\r\n"
+        		+ "|-------1-------1-|-1---------------|\r\n"
+        		+ "|-----2-----------|-2---------------|\r\n"
+        		+ "|---2-------------|-2---------------|\r\n"
+        		+ "|-0---------------|-0---------------|", 0);
         robot.clickOn("#playButton");
         
         //Confirm that the default slider value of 120.0 is correct
@@ -162,10 +162,10 @@ public class PlayMusicTest extends ApplicationTest {
         robot.sleep(1000);
         robot.clickOn("#pauseButton");
         
-        //Confirm that the end time is 00:24 which is the end time at 120bpm(default) for the given tablature
+        //Confirm that the end time is 00:16 which is the end time at 120bpm(default) for the given tablature
         FxAssert.verifyThat("#labelTimeEnd", (Label current) -> {
         	String lbl = current.getText();
-        	return lbl.equals("00:24");
+        	return lbl.equals("00:16");
         });
         
         //The following code is to manipulate the mouse to move the BPM slider to something different from the default
@@ -194,10 +194,10 @@ public class PlayMusicTest extends ApplicationTest {
         robot.sleep(1000);
         robot.clickOn("#pauseButton");
         
-        //Confirm that the end time is not 00:24 which means the bpm has changed
+        //Confirm that the end time is not 00:16 which means the bpm has changed
         FxAssert.verifyThat("#labelTimeEnd", (Label current) -> {
         	String lbl = current.getText();
-        	return !lbl.equals("00:24");
+        	return !lbl.equals("00:16");
         });       
         //Essentially, since the end time has changed, it means that the bpm must have changed.
     }
