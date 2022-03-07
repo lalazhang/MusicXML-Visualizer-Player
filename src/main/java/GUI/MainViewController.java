@@ -329,7 +329,9 @@ public class MainViewController extends Application {
 	}
 
 	@FXML
-	private void previewButtonHandle() throws Exception {
+
+	private void previewButtonHandle() throws IOException, TXMLException {
+
 //		System.out.println("Preview Button Clicked!");
 		// converter.getMusicXML() returns the MusicXML output as a String
 
@@ -343,8 +345,7 @@ public class MainViewController extends Application {
 		 */
 
 		Parent root;
-		
-		
+
 		
 			Stage stage = new Stage();
 //			FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GUI/PreviewSheetView.fxml"));
