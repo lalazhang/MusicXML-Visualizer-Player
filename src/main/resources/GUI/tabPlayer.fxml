@@ -14,7 +14,7 @@
 <AnchorPane fx:id="tabPlayerPane" maxHeight="374.0" maxWidth="554.0" minHeight="234.0" minWidth="413.0" prefHeight="291.0" prefWidth="554.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.PlayMusicController">
    <children>
       <TextArea fx:id="tabPlayerDisplay" layoutX="17.0" layoutY="22.0" prefHeight="154.0" prefWidth="523.0" />
-      <Button fx:id="playButton" layoutX="33.0" layoutY="247.0" mnemonicParsing="false" onAction="#playMusicHandle" prefHeight="14.0" prefWidth="24.0">
+      <Button fx:id="playMusic" layoutX="33.0" layoutY="247.0" mnemonicParsing="false" onAction="#playMusicHandle" prefHeight="14.0" prefWidth="24.0">
          <graphic>
             <ImageView fitHeight="18.0" fitWidth="54.0" pickOnBounds="true" preserveRatio="true">
                <image>
@@ -31,7 +31,7 @@
             </ImageView>
          </graphic></Button>
       <Button layoutX="477.0" layoutY="248.0" mnemonicParsing="false" onAction="#exit" prefHeight="26.0" prefWidth="47.0" text="Exit" />
-      <Slider fx:id="tempSlider" layoutX="213.0" layoutY="245.0" majorTickUnit="40.0" max="240.0" minorTickCount="1" prefHeight="38.0" prefWidth="155.0" showTickLabels="true" showTickMarks="true" value="120.0" />
+      <Slider fx:id="tempSlider" layoutX="213.0" layoutY="245.0" majorTickUnit="40.0" max="240.0" min="1.0" minorTickCount="1" prefHeight="38.0" prefWidth="155.0" showTickLabels="true" showTickMarks="true" value="120.0" />
       <Label fx:id="tempLabelL" layoutX="192.0" layoutY="245.0" prefHeight="17.0" prefWidth="21.0" text="BPM" textFill="WHITE">
          <font>
             <Font size="10.0" />
@@ -39,8 +39,8 @@
       <Label fx:id="labelTimeEnd" layoutX="506.0" layoutY="222.0" prefHeight="17.0" prefWidth="47.0" />
       <StackPane layoutX="18.0" layoutY="190.0" prefHeight="30.0" prefWidth="528.0">
          <children>
-            <ProgressBar fx:id="songPB" prefHeight="16.0" prefWidth="523.0" progress="0.0" />
-            <Slider fx:id="songSlider" opacity="0.3" prefHeight="1.0" prefWidth="528.0" />
+            <ProgressBar fx:id="songPB" opacity="0.9" prefHeight="16.0" prefWidth="523.0" progress="0.0" />
+            <Slider fx:id="songSlider" opacity="0.35" prefHeight="1.0" prefWidth="528.0" />
          </children>
       </StackPane>
       <Label fx:id="labelTimeCur" layoutX="23.0" layoutY="222.0" prefHeight="17.0" prefWidth="47.0" />
