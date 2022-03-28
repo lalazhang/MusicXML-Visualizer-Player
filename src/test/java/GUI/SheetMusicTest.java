@@ -6,6 +6,7 @@ import org.testfx.framework.junit5.ApplicationExtension;
 
 import converter.InstrumentSetting;
 import custom_exceptions.TXMLException;
+import draw.score.DrumNotesList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -89,11 +90,12 @@ public class SheetMusicTest extends ApplicationTest{
     public void testNoteToNumber() {
     	//Tests sample input to make sure correct notes are being determined
     	PrevSheetController controller = new PrevSheetController();
+    	DrumNotesList drumNotesList =new DrumNotesList();
     	String note = "C4";
-    	int noteNum = controller.noteToNumber(note);
+    	int noteNum = drumNotesList.noteToNumber(note);
     	assertEquals(-2,noteNum);
     	note = "D5";
-    	noteNum = controller.noteToNumber(note);
+    	noteNum = drumNotesList.noteToNumber(note);
     	assertEquals(6,noteNum);
     	
     	
