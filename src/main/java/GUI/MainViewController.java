@@ -24,6 +24,7 @@ import converter.measure.TabMeasure;
 import custom_exceptions.TXMLException;
 import javafx.application.Application;
 import javafx.concurrent.Task;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -41,6 +42,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import javafx.stage.WindowEvent;
 import utility.Range;
 import utility.Settings;
 import utility.XmlPlayer;
@@ -376,6 +378,14 @@ public class MainViewController extends Application {
 			controller.setMainViewController(this, converter.getMusicXML());
 
 			convertWindow = this.openNewWindow(root, "Music Player");
+			convertWindow.setOnCloseRequest(new EventHandler<WindowEvent>() {
+				@Override
+				public void handle(WindowEvent event) {
+					if (controller.isPlaying()){
+						controller.exit();
+					}
+				}
+			});
 		} catch (IOException e) {
 			Logger logger = Logger.getLogger(getClass().getName());
 			logger.log(Level.SEVERE, "Failed to create new Window.", e);

@@ -19,7 +19,14 @@ import org.staccato.StaccatoParserListener;
 import java.util.concurrent.TimeUnit;
 import GUI.MainViewController;
 import javafx.util.Duration;
+import models.Part;
+import models.ScorePartwise;
+import models.measure.Measure;
+import models.measure.note.Note;
 
+/*
+ * FIXME inspect and add null checking in methods
+ */
 public class XmlPlayer {
 	/**
 	 * MainViewController object to store parent mvc instance
@@ -66,9 +73,18 @@ public class XmlPlayer {
 	 */
 	private Pattern trackDrumPattern;
 	/**
+	 * Player object to play guitar music
+	 */
+	private Player guPlayer;
+	/**
 	 * Player object to play music
 	 */
-	private Player player;
+	private Player dsPlayer;
+	/*
+	 * Score partwise object to
+	 */
+	private ScorePartwise score;
+	private boolean playing;
 
 	/**
 	 * Constructor takes mainview object and xml output as string, instantiates our
@@ -79,18 +95,25 @@ public class XmlPlayer {
 	 */
 	public XmlPlayer(MainViewController mvcInput, String str) throws Exception {
 		mvc = mvcInput;
+		score = mvc.converter.getScore().getModel();
 		xmlString = str;
 		xmlParser = new MusicXmlParser();
 		stacListener = new StaccatoParserListener();
 		staccatoPattern = new Pattern();
-		drumPattern = new Pattern(getDrumPattern(mvc));
-		trackDrumPattern = new Pattern();
+		drumPattern = new Pattern();
+		playing = false;
 		midiListener = new MidiParserListener();
 		drumStacListener = new StaccatoParserListener();
 		midiParser = new MidiParser();
-		player = new Player();
-		inst = mvc.converter.getScore().getModel().getPartList().getScoreParts().get(0).getPartName();
-		update();
+		guPlayer = new Player();
+		dsPlayer = new Player();
+		inst = score.getPartList().getScoreParts().get(0).getPartName();
+		xmlParser.addParserListener(midiListener);
+		xmlParser.addParserListener(drumStacListener);
+		xmlParser.parse(xmlString);
+		midiParser.addParserListener(stacListener);
+		midiParser.parse(midiListener.getSequence());
+		update(120);
 	}
 
 	/**
@@ -99,19 +122,15 @@ public class XmlPlayer {
 	 * 
 	 * @throws Exception
 	 */
-	private void update() throws Exception {
+	private void update(int tempo) throws Exception {
 		// TODO Auto-generated method stub
-		xmlParser.addParserListener(midiListener);
-		xmlParser.addParserListener(drumStacListener);
-		xmlParser.parse(xmlString);
-		midiParser.addParserListener(stacListener);
-		midiParser.parse(midiListener.getSequence());
 
 		if (this.inst.equals("Guitar")) {
-			staccatoPattern = stacListener.getPattern().setTempo(120).setInstrument(24);
+			staccatoPattern = stacListener.getPattern().setTempo(tempo).setInstrument(24);
 		} else {
-			trackDrumPattern = drumStacListener.getPattern().setTempo(120);
-			staccatoPattern = drumPattern.setTempo(120);
+			trackDrumPattern = drumStacListener.getPattern().setTempo(tempo);
+			drumPattern = getDrumPattern(score).setTempo(tempo);
+
 //			System.out.println(staccatoPattern.getPattern());
 		}
 	}
@@ -123,26 +142,55 @@ public class XmlPlayer {
 	 * @throws Exception
 	 */
 	public void play() throws Exception {
-		// If playback has never been started, start playback
-		if (!player.getManagedPlayer().isStarted()) {
-			player.getManagedPlayer().start(player.getSequence(staccatoPattern));
-		}
-		// Otherwise resume playback
-		else {
-			if (player.getManagedPlayer().isFinished()) {
-				player.getManagedPlayer().start(player.getSequence(staccatoPattern));
-			} else {
-				player.getManagedPlayer().resume();
+
+		if (this.inst.equals("Guitar")) {
+			if (!guPlayer.getManagedPlayer().isStarted()) {
+
+				guPlayer.getManagedPlayer().start(guPlayer.getSequence(staccatoPattern));
+				playing = true;
+			}
+
+			else {
+				if (guPlayer.getManagedPlayer().isFinished()) {
+					guPlayer.getManagedPlayer().start(guPlayer.getSequence(staccatoPattern));
+					playing = true;
+				} else {
+					guPlayer.getManagedPlayer().resume();
+					playing = true;
+				}
+			}
+
+		} else {
+			if (!dsPlayer.getManagedPlayer().isStarted()) {
+
+				dsPlayer.getManagedPlayer().start(dsPlayer.getSequence(drumPattern));
+				playing = true;
+			}
+
+			else {
+				if (dsPlayer.getManagedPlayer().isFinished()) {
+					dsPlayer.getManagedPlayer().start(dsPlayer.getSequence(drumPattern));
+					playing = true;
+				} else {
+					dsPlayer.getManagedPlayer().resume();
+					playing = true;
+				}
 			}
 		}
-
 	}
 
 	/**
 	 * pauses music playback
 	 */
 	public void pause() {
-		player.getManagedPlayer().pause();
+		if (this.inst.equals("Guitar")) {
+			guPlayer.getManagedPlayer().pause();
+			playing = false;
+		} else {
+			dsPlayer.getManagedPlayer().pause();
+			playing = false;
+		}
+
 	}
 
 	/**
@@ -152,8 +200,13 @@ public class XmlPlayer {
 	 * @param time
 	 */
 	public void seek(float time) {
-		long tk = player.getManagedPlayer().getTickLength();
-		player.getManagedPlayer().seek((long) (time * tk));
+		if (this.inst.equals("Guitar")) {
+			long tk = guPlayer.getManagedPlayer().getTickLength();
+			guPlayer.getManagedPlayer().seek((long) (time * tk));
+		} else {
+			long tk = dsPlayer.getManagedPlayer().getTickLength();
+			dsPlayer.getManagedPlayer().seek((long) (time * tk));
+		}
 	}
 
 	/**
@@ -164,15 +217,35 @@ public class XmlPlayer {
 	 * 
 	 */
 	public void setTempo(float temp) throws Exception {
-		staccatoPattern.setTempo((int) (temp));
-		if (player.getManagedPlayer().isPlaying()) {
-			long pos = player.getManagedPlayer().getTickPosition();
-			long dur = player.getManagedPlayer().getTickLength();
-			double ratio = (double) pos / (double) dur;
-			player.getManagedPlayer().finish();
-			player.getManagedPlayer().start(player.getSequence(staccatoPattern));
-			player.getManagedPlayer().seek((long) (ratio * player.getManagedPlayer().getTickLength()));
+		update((int) (temp));
+		if (this.inst.equals("Guitar")) {
+			if (guPlayer.getManagedPlayer().isPlaying()) {
+				long pos = guPlayer.getManagedPlayer().getTickPosition();
+				long dur = guPlayer.getManagedPlayer().getTickLength();
+				double ratio = (double) pos / (double) dur;
+				guPlayer.getManagedPlayer().finish();
+				guPlayer.getManagedPlayer().start(guPlayer.getSequence(staccatoPattern));
+				guPlayer.getManagedPlayer().seek((long) (ratio * guPlayer.getManagedPlayer().getTickLength()));
+			}
+		} else {
+
+			if (dsPlayer.getManagedPlayer().isPlaying()) {
+
+				long pos = dsPlayer.getManagedPlayer().getTickPosition();
+				long dur = dsPlayer.getManagedPlayer().getTickLength();
+				double ratio = (double) pos / (double) dur;
+
+				Player mp1 = new Player();
+				mp1.getManagedPlayer().start(mp1.getSequence(drumPattern));
+
+				mp1.getManagedPlayer().seek((long) (ratio * dsPlayer.getManagedPlayer().getTickLength()));
+				dsPlayer = mp1;
+
+				play();
+
+			}
 		}
+
 	}
 
 	/**
@@ -181,8 +254,13 @@ public class XmlPlayer {
 	 * @param vol
 	 */
 	public int getTempo() {
-		int temp = Integer.valueOf(staccatoPattern.getTokens().get(0).toString().substring(1));
+		int temp = 120;
+		if (this.inst.equals("Guitar")) {
+			temp = Integer.valueOf(staccatoPattern.getTokens().get(0).toString().substring(1));
 //		System.out.println(staccatoPattern.getTokens());
+		} else {
+			temp = Integer.valueOf(drumPattern.getTokens().get(0).toString().substring(1));
+		}
 		return temp;
 
 	}
@@ -198,13 +276,13 @@ public class XmlPlayer {
 		int seconds = 0;
 
 		if (this.inst.equals("Guitar")) {
-			Duration time = new Duration(player.getSequence(staccatoPattern).getMicrosecondLength() / 1000);
+			Duration time = new Duration(guPlayer.getSequence(staccatoPattern).getMicrosecondLength() / 1000);
 			hours = (int) time.toHours();
 			minutes = (int) time.toMinutes();
 			seconds = (int) time.toSeconds();
 		} else {
 
-			Duration time = new Duration(player.getSequence(trackDrumPattern).getMicrosecondLength() / 1000);
+			Duration time = new Duration(dsPlayer.getSequence(trackDrumPattern).getMicrosecondLength() / 1000);
 			hours = (int) time.toHours();
 			minutes = (int) time.toMinutes();
 			seconds = (int) time.toSeconds();
@@ -238,13 +316,17 @@ public class XmlPlayer {
 	 */
 	public String getCurTime() {
 		double totUS = 0.0;
+		double cur = 0.0;
 		if (this.inst.equals("Guitar")) {
-			totUS = (double) (player.getSequence(staccatoPattern).getMicrosecondLength());
+			totUS = (double) (guPlayer.getSequence(staccatoPattern).getMicrosecondLength());
+			cur = totUS * (double) guPlayer.getManagedPlayer().getTickPosition()
+					/ guPlayer.getManagedPlayer().getTickLength();
 		} else {
-			totUS = (double) (player.getSequence(trackDrumPattern).getMicrosecondLength());
+			totUS = (double) (dsPlayer.getSequence(trackDrumPattern).getMicrosecondLength());
+			cur = totUS * (double) dsPlayer.getManagedPlayer().getTickPosition()
+					/ dsPlayer.getManagedPlayer().getTickLength();
 		}
-		double cur = totUS * (double) player.getManagedPlayer().getTickPosition()
-				/ player.getManagedPlayer().getTickLength();
+
 		Duration time = new Duration(cur / 1000);
 
 		int hours = (int) time.toHours();
@@ -274,653 +356,131 @@ public class XmlPlayer {
 	 * @param mvcInput
 	 * @return Pattern for the drumset tab given in mvcinput
 	 */
-	public Pattern getDrumPattern(MainViewController mvcInput) {
-		// Custom rhythm kit
-		Map<Character, String> newRhythmKit = new HashMap<Character, String>();
-		newRhythmKit.put('.', "Ri");
-		newRhythmKit.put('O', "[BASS_DRUM]i");
-		newRhythmKit.put('o', "Rs [BASS_DRUM]s");
-		newRhythmKit.put('S', "[ACOUSTIC_SNARE]i");
-		newRhythmKit.put('s', "Rs [ACOUSTIC_SNARE]s");
-		newRhythmKit.put('^', "[PEDAL_HI_HAT]i");
-		newRhythmKit.put('`', "[PEDAL_HI_HAT]s Rs");
-		newRhythmKit.put('*', "[CRASH_CYMBAL_1]i");
-		newRhythmKit.put('+', "[CRASH_CYMBAL_1]s Rs");
-		newRhythmKit.put('X', "[HAND_CLAP]i");
-		newRhythmKit.put('x', "Rs [HAND_CLAP]s");
-		newRhythmKit.put(' ', "Ri");
-		newRhythmKit.put('>', "[CLOSED_HI_HAT]i");
-		newRhythmKit.put('<', "[OPEN_HI_HAT]i");
-		newRhythmKit.put('-', "[RIDE_CYMBAL_1]i");
-		newRhythmKit.put(':', "[LO_MID_TOM]i");
-		newRhythmKit.put(';', "[LO_TOM]i");
-		newRhythmKit.put(',', "[HIGH_FLOOR_TOM]i");
-		newRhythmKit.put('_', "[LO_FLOOR_TOM]i");
-		// Object to store entire drum pattern
+	public Pattern getDrumPattern(ScorePartwise sc) {
 		Pattern drumPattern = new Pattern();
-		// Iterate over the measures in the tab
-		for (int i = 0; i < mvcInput.converter.getScore().getMeasureList().size(); i++) {
 
-			// Create new rhythm per measure and set rhythm kit
-			Rhythm rhythm = new Rhythm();
-			rhythm.setRhythmKit(newRhythmKit);
-			for (int j = 0; j < mvcInput.converter.getScore().getMeasureList().get(i).tabStringList.size(); j++) {
-				// build rhythm
-				String note = mvcInput.converter.getScore().getMeasureList().get(i).tabStringList.get(j).name;
-				String line = mvcInput.converter.getScore().getMeasureList().get(i).tabStringList.get(j).line;
-//				System.out.println(note + "l");
-//				System.out.println(line + "l");
-				/**
-				 * State machine to iterate through lines of all measures in a drum tab and
-				 * build drumset pattern from them TODO confirm types of instrument strikes
-				 * match sounds such as g(grace), f and d
-				 */
+		StringBuilder drumString = new StringBuilder();
+//		int partCount = 0;
+		for (Measure meas : sc.getParts().get(0).getMeasures()) {
+			if (meas.getNotesBeforeBackup() != null) {
+				for (Note note : meas.getNotesBeforeBackup()) {
+//						if (drumString.length()==0) {
+//							drumString.append(getNoteDetails(note));
+//							drumString.append("+");
+//							
+//						}
+					if (note.getChord() == null && drumString.length() > 0
+							&& drumString.charAt(drumString.length() - 1) == '+') {
+						drumString.deleteCharAt(drumString.length() - 1);
+						drumString.append(" ");
 
-				switch (note) {
-				case ("C "):// Crash cymbal
-					// layer string to build layers for rhythm
-					String cymLayer = "";
-					/**
-					 * Iterate though line array and build layer string based on characters in line
-					 */
-					for (char c : line.toCharArray()) {
-						switch (c) {
-						case ('-'):
-							cymLayer = cymLayer + ".";
-							break;
-						case ('X'):
-							cymLayer = cymLayer + "*";
-							break;
-						case ('r'):
-							cymLayer = cymLayer + ".";
-							break;
-						case ('s'):
-							break;
-						case ('x'):
-							cymLayer = cymLayer + "*";
-							break;
-						default:
-							cymLayer = cymLayer + ".";
-							break;
-						}
 
 					}
-					rhythm.addLayer(cymLayer);
-					break;
+					if (note.getChord() != null && drumString.length() > 0
+							&& drumString.charAt(drumString.length() - 1) == '+') {
+						// System.out.println(musicString.toString());
 
-				case ("H "):// Closed hi-hat
-					// layer string to build layers for rhythm
-					String hhLayer = "";
-					/**
-					 * Iterate though line array and build layer string based on characters in line
-					 */
-					for (char c : line.toCharArray()) {
-						switch (c) {
-						case ('-'):
-							hhLayer = hhLayer + ".";
-							break;
-						case ('x'):
-							hhLayer = hhLayer + ">";
-							break;
-						case ('d'):
-							hhLayer = hhLayer + ">";
-							break;
-						case ('o'):
-							hhLayer = hhLayer + "<";
-							break;
-						case ('O'):
-							hhLayer = hhLayer + "<";
-							break;
-						case ('X'):
-							hhLayer = hhLayer + ">";
-							break;
-						default:
-							hhLayer = hhLayer + ".";
-							break;
-						}
-					}
-					rhythm.addLayer(hhLayer);
-					break;
+						drumString.append("[" + getDrumName(note.getInstrument().getId()) + "] ");
 
-				case ("R "):// Ride cymbal
-					// layer string to build layers for rhythm
-					String rcLayer = "";
-					/**
-					 * Iterate though line array and build layer string based on characters in line
-					 */
-					for (char c : line.toCharArray()) {
-						switch (c) {
-						case ('-'):
-							rcLayer = rcLayer + ".";
-							break;
-						case ('x'):
-							rcLayer = rcLayer + "-";
-							break;
-						case ('g'):
-							rcLayer = rcLayer + "-";
-							break;
-						case ('X'):
-							rcLayer = rcLayer + "-";
-							break;
-						default:
-							rcLayer = rcLayer + ".";
-							break;
-						}
+					} else {
+						drumString.append(getNoteDetails(note));
 					}
-					rhythm.addLayer(rcLayer);
-					break;
 
-				case ("S "):// Acoustic snare
-					// layer string to build layers for rhythm
-					String sLayer = "";
-					/**
-					 * Iterate though line array and build layer string based on characters in line
-					 */
-					for (char c : line.toCharArray()) {
-						switch (c) {
-						case ('-'):
-							sLayer = sLayer + ".";
-							break;
-						case ('o'):
-							sLayer = sLayer + "s";
-							break;
-						case ('f'):
-							sLayer = sLayer + "s";
-							break;
-						case ('O'):
-							sLayer = sLayer + "S";
-							break;
-						case ('g'):
-							sLayer = sLayer + "s";
-							break;
-						case ('d'):
-							sLayer = sLayer + "s";
-							break;
-						case ('r'):
-							sLayer = sLayer + ".";
-							break;
-						default:
-							sLayer = sLayer + ".";
-							break;
-						}
+					if (note.getRest() != null) {
+						drumString.append("R");
+						drumString.append(getNoteDuration(note));
+					} else {
+						drumString.deleteCharAt(drumString.length() - 1);
+						drumString.append(getNoteDuration(note));
 					}
-					rhythm.addLayer(sLayer);
-					break;
 
-				case ("t "):// Low mid tom
-					// layer string to build layers for rhythm
-					String lmLayer = "";
-					/**
-					 * Iterate though line array and build layer string based on characters in line
-					 */
-					for (char c : line.toCharArray()) {
-						switch (c) {
-						case ('-'):
-							lmLayer = lmLayer + ".";
-							break;
-						case ('o'):
-							lmLayer = lmLayer + ":";
-							break;
-						case ('f'):
-							lmLayer = lmLayer + ":";
-							break;
-						case ('O'):
-							lmLayer = lmLayer + ":";
-							break;
-						case ('g'):
-							lmLayer = lmLayer + ":";
-							break;
-						case ('d'):
-							lmLayer = lmLayer + ":";
-							break;
-						case ('r'):
-							lmLayer = lmLayer + ".";
-							break;
-						default:
-							lmLayer = lmLayer + ".";
-							break;
-						}
-					}
-					rhythm.addLayer(lmLayer);
-					break;
+					// musicString.append(getDots(note));
+					// addTies(musicString, note);
 
-				case ("T "):// Low tom
-					// layer string to build layers for rhythm
-					String ltLayer = "";
-					/**
-					 * Iterate though line array and build layer string based on characters in line
-					 */
-					for (char c : line.toCharArray()) {
-						switch (c) {
-						case ('-'):
-							ltLayer = ltLayer + ".";
-							break;
-						case ('o'):
-							ltLayer = ltLayer + ";";
-							break;
-						case ('f'):
-							ltLayer = ltLayer + ";";
-							break;
-						case ('O'):
-							ltLayer = ltLayer + ";";
-							break;
-						case ('g'):
-							ltLayer = ltLayer + ";";
-							break;
-						case ('d'):
-							ltLayer = ltLayer + ";";
-							break;
-						case ('r'):
-							ltLayer = ltLayer + ".";
-							break;
-						default:
-							ltLayer = ltLayer + ".";
-							break;
-						}
-					}
-					rhythm.addLayer(ltLayer);
-					break;
-				case ("f "):// High floor tom
-					// layer string to build layers for rhythm
-					String fhLayer = "";
-					/**
-					 * Iterate though line array and build layer string based on characters in line
-					 */
-					for (char c : line.toCharArray()) {
-						switch (c) {
-						case ('-'):
-							fhLayer = fhLayer + ".";
-							break;
-						case ('o'):
-							fhLayer = fhLayer + ",";
-							break;
-						case ('f'):
-							fhLayer = fhLayer + ",";
-							break;
-						case ('O'):
-							fhLayer = fhLayer + ",";
-							break;
-						case ('g'):
-							fhLayer = fhLayer + ",";
-							break;
-						case ('d'):
-							fhLayer = fhLayer + ",";
-							break;
-						case ('r'):
-							fhLayer = fhLayer + ".";
-							break;
-						default:
-							fhLayer = fhLayer + ".";
-							break;
-						}
-					}
-					rhythm.addLayer(fhLayer);
-					break;
-				case ("F "):// Low floor tom
-					// layer string to build layers for rhythm
-					String flLayer = "";
-					/**
-					 * Iterate though line array and build layer string based on characters in line
-					 */
-					for (char c : line.toCharArray()) {
-						switch (c) {
-						case ('-'):
-							flLayer = flLayer + ".";
-							break;
-						case ('o'):
-							flLayer = flLayer + "_";
-							break;
-						case ('f'):
-							flLayer = flLayer + "_";
-							break;
-						case ('O'):
-							flLayer = flLayer + "_";
-							break;
-						case ('g'):
-							flLayer = flLayer + "_";
-							break;
-						case ('d'):
-							flLayer = flLayer + "_";
-							break;
-						case ('r'):
-							flLayer = flLayer + ".";
-							break;
-						default:
-							flLayer = flLayer + ".";
-							break;
-						}
-					}
-					rhythm.addLayer(flLayer);
-					break;
 
-				case ("B "):// Bass drum
-					// layer string to build layers for rhythm
-					String bdLayer = "";
-					/**
-					 * Iterate though line array and build layer string based on characters in line
-					 */
-					for (char c : line.toCharArray()) {
-						switch (c) {
-						case ('-'):
-							bdLayer = bdLayer + ".";
-							break;
-						case ('o'):
-							bdLayer = bdLayer + "o";
-							break;
-						case ('f'):
-							bdLayer = bdLayer + "o";
-							break;
-						case ('O'):
-							bdLayer = bdLayer + "O";
-							break;
-						case ('g'):
-							bdLayer = bdLayer + "o";
-							break;
-						case ('d'):
-							bdLayer = bdLayer + "o";
-							break;
-						case ('r'):
-							bdLayer = bdLayer + ".";
-							break;
-						default:
-							bdLayer = bdLayer + ".";
-							break;
-						}
-					}
-					rhythm.addLayer(bdLayer);
-					break;
-				case ("Hf"):// Pedal Hi-hat
-					// layer string to build layers for rhythm
-					String phLayer = "";
-					/**
-					 * Iterate though line array and build layer string based on characters in line
-					 * 
-					 */
-					for (char c : line.toCharArray()) {
-						switch (c) {
-						case ('-'):
-							phLayer = phLayer + ".";
-							break;
-						case ('x'):
-							phLayer = phLayer + "^";
-							break;
-						case ('X'):
-							phLayer = phLayer + "`";
-							break;
-						case ('r'):
-							phLayer = phLayer + ".";
-							break;
-						default:
-							phLayer = phLayer + ".";
-							break;
-						}
-					}
-					rhythm.addLayer(phLayer);
-					break;
-				default:
-					if (note.equals("CC")) {
-						// layer string to build layers for rhythm
-						String cLayer = "";
-						/**
-						 * Iterate though line array and build layer string based on characters in line
-						 */
-						for (char c : line.toCharArray()) {
-							switch (c) {
-							case ('-'):
-								cLayer = cLayer + ".";
-								break;
-							case ('X'):
-								cLayer = cLayer + "*";
-								break;
-							case ('r'):
-								cLayer = cLayer + ".";
-								break;
-							case ('s'):
-								break;
-							case ('x'):
-								cLayer = cLayer + "*";
-								break;
-							default:
-								cLayer = cLayer + ".";
-								break;
-							}
+					drumString.append(" ");
 
-						}
-						rhythm.addLayer(cLayer);
-
-					} else if (note.equals("HH")) {
-						// layer string to build layers for rhythm
-						String hLayer = "";
-						/**
-						 * Iterate though line array and build layer string based on characters in line
-						 */
-						for (char c : line.toCharArray()) {
-							switch (c) {
-							case ('-'):
-								hLayer = hLayer + ".";
-								break;
-							case ('x'):
-								hLayer = hLayer + ">";
-								break;
-							case ('d'):
-								hLayer = hLayer + ">";
-								break;
-							case ('o'):
-								hLayer = hLayer + "<";
-								break;
-							case ('O'):
-								hLayer = hLayer + "<";
-								break;
-							case ('X'):
-								hLayer = hLayer + ">";
-								break;
-							default:
-								hLayer = hLayer + ".";
-								break;
-							}
-						}
-						rhythm.addLayer(hLayer);
-
-					} else if (note.equals("SD")) {
-						// layer string to build layers for rhythm
-						String sDLayer = "";
-						/**
-						 * Iterate though line array and build layer string based on characters in line
-						 */
-						for (char c : line.toCharArray()) {
-							switch (c) {
-							case ('-'):
-								sDLayer = sDLayer + ".";
-								break;
-							case ('o'):
-								sDLayer = sDLayer + "s";
-								break;
-							case ('f'):
-								sDLayer = sDLayer + "s";
-								break;
-							case ('O'):
-								sDLayer = sDLayer + "S";
-								break;
-							case ('g'):
-								sDLayer = sDLayer + "s";
-								break;
-							case ('d'):
-								sDLayer = sDLayer + "s";
-								break;
-							case ('r'):
-								sDLayer = sDLayer + ".";
-								break;
-							default:
-								sDLayer = sDLayer + ".";
-								break;
-							}
-						}
-						rhythm.addLayer(sDLayer);
-
-					}else if (note.equals("HT")) {
-						// layer string to build layers for rhythm
-						String fhTLayer = "";
-						/**
-						 * Iterate though line array and build layer string based on characters in line
-						 */
-						for (char c : line.toCharArray()) {
-							switch (c) {
-							case ('-'):
-								fhTLayer = fhTLayer + ".";
-								break;
-							case ('o'):
-								fhTLayer = fhTLayer + ",";
-								break;
-							case ('f'):
-								fhTLayer = fhTLayer + ",";
-								break;
-							case ('O'):
-								fhTLayer = fhTLayer + ",";
-								break;
-							case ('g'):
-								fhTLayer = fhTLayer + ",";
-								break;
-							case ('d'):
-								fhTLayer = fhTLayer + ",";
-								break;
-							case ('r'):
-								fhTLayer = fhTLayer + ".";
-								break;
-							default:
-								fhTLayer = fhTLayer + ".";
-								break;
-							}
-						}
-						rhythm.addLayer(fhTLayer);
+					if (note != meas.getNotesBeforeBackup().get(meas.getNotesBeforeBackup().size() - 1)) {
+						// System.out.println(musicString.charAt(musicString.length() - 1));
+						drumString.deleteCharAt(drumString.length() - 1);
+						drumString.append("+");
 					}
-					else if (note.equals("MT")) {
-						// layer string to build layers for rhythm
-						String fMTLayer = "";
-						/**
-						 * Iterate though line array and build layer string based on characters in line
-						 */
-						for (char c : line.toCharArray()) {
-							switch (c) {
-							case ('-'):
-								fMTLayer = fMTLayer + ".";
-								break;
-							case ('o'):
-								fMTLayer = fMTLayer + "_";
-								break;
-							case ('f'):
-								fMTLayer = fMTLayer + "_";
-								break;
-							case ('O'):
-								fMTLayer = fMTLayer + "_";
-								break;
-							case ('g'):
-								fMTLayer = fMTLayer + "_";
-								break;
-							case ('d'):
-								fMTLayer = fMTLayer + "_";
-								break;
-							case ('r'):
-								fMTLayer = fMTLayer + ".";
-								break;
-							default:
-								fMTLayer = fMTLayer + ".";
-								break;
-							}
-						}
-						rhythm.addLayer(fMTLayer);
-					}
-					else if (note.equals("BD")) {
-						// layer string to build layers for rhythm
-						String bLayer = "";
-						/**
-						 * Iterate though line array and build layer string based on characters in line
-						 */
-						for (char c : line.toCharArray()) {
-							switch (c) {
-							case ('-'):
-								bLayer = bLayer + ".";
-								break;
-							case ('o'):
-								bLayer = bLayer + "o";
-								break;
-							case ('f'):
-								bLayer = bLayer + "o";
-								break;
-							case ('O'):
-								bLayer = bLayer + "O";
-								break;
-							case ('g'):
-								bLayer = bLayer + "o";
-								break;
-							case ('d'):
-								bLayer = bLayer + "o";
-								break;
-							case ('r'):
-								bLayer = bLayer + ".";
-								break;
-							default:
-								bLayer = bLayer + ".";
-								break;
-							}
-						}
-						rhythm.addLayer(bLayer);
-
-					}
-					else if (note.equals("FT")) {
-						// layer string to build layers for rhythm
-						String lFTLayer = "";
-						/**
-						 * Iterate though line array and build layer string based on characters in line
-						 */
-						for (char c : line.toCharArray()) {
-							switch (c) {
-							case ('-'):
-								lFTLayer = lFTLayer + ".";
-								break;
-							case ('o'):
-								lFTLayer = lFTLayer + ":";
-								break;
-							case ('f'):
-								lFTLayer = lFTLayer + ":";
-								break;
-							case ('O'):
-								lFTLayer = lFTLayer + ":";
-								break;
-							case ('g'):
-								lFTLayer = lFTLayer + ":";
-								break;
-							case ('d'):
-								lFTLayer = lFTLayer + ":";
-								break;
-							case ('r'):
-								lFTLayer = lFTLayer + ".";
-								break;
-							default:
-								lFTLayer = lFTLayer + ".";
-								break;
-							}
-						}
-						rhythm.addLayer(lFTLayer);
-					}
-					break;
-
 				}
-
 			}
-			// build drum pattern
-			if (i > 0) {
-
-				drumPattern = drumPattern.add("|" + rhythm.getPattern().toString().substring(2));
-
-			} else {
-				drumPattern = rhythm.getPattern();
-			}
-
 		}
-		// FIXME fix drum pattern timing
+		drumPattern.add(drumString.toString());
 
 		return drumPattern;
 
+	}
+
+	public String getNoteDetails(Note note) {
+		StringBuilder noteDetails = new StringBuilder();
+		String instrument;
+		if (note.getUnpitched() != null) {
+			instrument = "[" + getDrumName(note.getInstrument().getId()) + "]";
+			noteDetails.append("V9" + " " + instrument + " ");
+		}
+		return noteDetails.toString();
+	}
+
+	public String getDrumName(String InstrumentId) {
+		if (InstrumentId.equals("P1-I47")) {
+			return "OPEN_HI_HAT";
+		} else if (InstrumentId.equals("P1-I52")) {
+			return "RIDE_CYMBAL_1";
+		} else if (InstrumentId.equals("P1-I53")) {
+			return "CHINESE_CYMBAL";
+		} else if (InstrumentId.equals("P1-I43")) {
+			return "CLOSED_HI_HAT";
+		} else if (InstrumentId.equals("P1-I46")) {
+			return "LO_TOM";
+		} else if (InstrumentId.equals("P1-I44")) {
+			return "HIGH_FLOOR_TOM";
+		} else if (InstrumentId.equals("P1-I54")) {
+			return "RIDE_BELL";
+		} else if (InstrumentId.equals("P1-I36")) {
+			return "BASS_DRUM";
+		} else if (InstrumentId.equals("P1-I50")) {
+			return "CRASH_CYMBAL_1";
+		} else if (InstrumentId.equals("P1-I39")) {
+			return "ACOUSTIC_SNARE";
+		} else if (InstrumentId.equals("P1-I42")) {
+			return "LO_FLOOR_TOM";
+		} else if (InstrumentId.equals("P1-I48")) {
+			return "LO_MID_TOM";
+		} else if (InstrumentId.equals("P1-I45")) {
+			return "PEDAL_HI_HAT";
+    }
+		else {
+			return "ACOUSTIC_SNARE";
+		} // default
+	}
+
+	public char getNoteDuration(Note note) {
+		if (note.getType() != null) {
+			if (note.getType().equals("whole")) {
+				return 'w';
+			} else if (note.getType().equals("half")) {
+				return 'h';
+			} else if (note.getType().equals("quarter")) {
+				return 'q';
+			} else if (note.getType().equals("eighth")) {
+				return 'i';
+			} else if (note.getType().equals("16th")) {
+				return 's';
+			} else if (note.getType().equals("32nd")) {
+				return 't';
+			} else if (note.getType().equals("64th")) {
+				return 'x';
+			} else if (note.getType().equals("128th")) {
+				return 'o';
+			} else {
+				return 'q';
+			}
+		} else {
+			return 'q';
+		}
 	}
 
 	/**
@@ -929,7 +489,11 @@ public class XmlPlayer {
 	 * @return
 	 */
 	public ManagedPlayer getManagedPlayer() {
-		return this.player.getManagedPlayer();
+		if (this.inst.equals("Guitar")) {
+			return this.guPlayer.getManagedPlayer();
+		} else {
+			return this.dsPlayer.getManagedPlayer();
+		}
 	}
 
 //	ScorePartwise sp = converter.getScore().getModel(); PartList pl = sp.getPartList(); pl.getScoreParts().get(0).getPartName();
