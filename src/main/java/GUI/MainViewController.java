@@ -331,7 +331,9 @@ public class MainViewController extends Application {
 	}
 
 	@FXML
-	private void previewButtonHandle() throws Exception {
+
+	private void previewButtonHandle() throws IOException, TXMLException {
+
 //		System.out.println("Preview Button Clicked!");
 		// converter.getMusicXML() returns the MusicXML output as a String
 
@@ -345,8 +347,7 @@ public class MainViewController extends Application {
 		 */
 
 		Parent root;
-		
-		try {
+
 		
 			Stage stage = new Stage();
 //			FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GUI/PreviewSheetView.fxml"));
@@ -354,14 +355,14 @@ public class MainViewController extends Application {
 //			stage.getScene().getRoot();
 			PrevSheetController controller = new PrevSheetController();
 			controller.setMainViewController(this);
-			controller.printMusicXml();
-			controller.start(stage);
+			
+			try {
+				controller.start(stage);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
-//			convertWindow = this.openNewWindow(root, "Sheet music output");
-		} catch (IOException e) {
-			Logger logger = Logger.getLogger(getClass().getName());
-			logger.log(Level.SEVERE, "Failed to create new Window.", e);
-		}
 
 	}
 

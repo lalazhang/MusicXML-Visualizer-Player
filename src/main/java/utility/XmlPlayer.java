@@ -358,6 +358,7 @@ public class XmlPlayer {
 	 */
 	public Pattern getDrumPattern(ScorePartwise sc) {
 		Pattern drumPattern = new Pattern();
+
 		StringBuilder drumString = new StringBuilder();
 //		int partCount = 0;
 		for (Measure meas : sc.getParts().get(0).getMeasures()) {
@@ -372,6 +373,7 @@ public class XmlPlayer {
 							&& drumString.charAt(drumString.length() - 1) == '+') {
 						drumString.deleteCharAt(drumString.length() - 1);
 						drumString.append(" ");
+
 
 					}
 					if (note.getChord() != null && drumString.length() > 0
@@ -391,8 +393,10 @@ public class XmlPlayer {
 						drumString.deleteCharAt(drumString.length() - 1);
 						drumString.append(getNoteDuration(note));
 					}
+
 					// musicString.append(getDots(note));
 					// addTies(musicString, note);
+
 
 					drumString.append(" ");
 
@@ -447,8 +451,7 @@ public class XmlPlayer {
 			return "LO_MID_TOM";
 		} else if (InstrumentId.equals("P1-I45")) {
 			return "PEDAL_HI_HAT";
-		}
-
+    }
 		else {
 			return "ACOUSTIC_SNARE";
 		} // default
