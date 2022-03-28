@@ -94,7 +94,6 @@ public class PlayMusicController extends Application {
 //		}
 		playing =false;
 		mp = new XmlPlayer(mvc, xmlstr);
-		timer = new Timer();
 		labelTimeCur.setText("00:00");
 
 	}
@@ -169,7 +168,7 @@ public class PlayMusicController extends Application {
 	public void beginTimer() {
 //		playing = mp.getManagedPlayer().isPlaying();
 
-		
+		timer = new Timer();
 		task = new TimerTask() {
 			public void run() {
 				if (mp.getManagedPlayer().isStarted()) {
@@ -205,7 +204,7 @@ public class PlayMusicController extends Application {
 	private void pauseMusicHandle() throws InterruptedException {
 		playing=false;
 		mp.pause();
-		timer.wait();
+		cancelTimer();
 	}
 	/*
 	 * 
