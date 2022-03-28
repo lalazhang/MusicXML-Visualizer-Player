@@ -23,7 +23,9 @@ import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+
 import javafx.scene.control.ScrollPane;
+
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -47,12 +49,14 @@ public class PrevSheetController extends Application {
 
 	public String clef;
 
+
 	private String instrumentName;
 	DrumNotesList drumNotesList = new DrumNotesList();
 	GuitarNotesList guitarNotesList = new GuitarNotesList();
 	DrawDrumNotes drawDrumNotes = new DrawDrumNotes();
 	DrawGuitarNotes drawGuitarNotes = new DrawGuitarNotes();
 	@FXML
+
 	public void initialize() {
 		// mxlTextPre.setParagraphGraphicFactory(LineNumberFactory.get(mxlTextPre));
 		Button button1 = new Button("button1");
@@ -67,6 +71,7 @@ public class PrevSheetController extends Application {
 
 	public void start(Stage primaryStage) throws Exception {
 		// TODO Auto-generated method stub
+
 		ScrollPane scrollPane = new ScrollPane();
 		Score score = mvc.converter.getScore();
 		String instrumentName = getInstrumentName(score);
@@ -102,6 +107,7 @@ public class PrevSheetController extends Application {
 
 		primaryStage.show();
 	}
+
 
 	public void setMainViewController(MainViewController mvcInput) {
 
