@@ -353,8 +353,7 @@ public class MainViewController extends Application {
 //			stage.getScene().getRoot();
 			PrevSheetController controller = new PrevSheetController();
 			controller.setMainViewController(this);
-			controller.printMusicXml();
-
+			
 			try {
 				controller.start(stage);
 			} catch (Exception e) {
