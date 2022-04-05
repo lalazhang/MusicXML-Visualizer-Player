@@ -1,20 +1,27 @@
 package draw.score;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import GUI.MainViewController;
 import converter.Score;
 import converter.measure.TabMeasure;
+import converter.note.DrumNote;
 import custom_exceptions.TXMLException;
 import models.Part;
+import models.measure.note.Note;
 
 public class DrumNotesList {
 	public String clef;
+	private MainViewController mvc;
 	public DrumNotesList() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	
+	//Note note= new Note();
+	Map <Integer,List<Note>> drumNotesList = new HashMap<> ();
     public String getInstrumentName(Score score) throws TXMLException {
 	
 		
@@ -49,6 +56,7 @@ public class DrumNotesList {
 	
 	    
 	    public int[][] notesList(MainViewController mvc) throws TXMLException  {
+	    	int drumNotesListIdx=0;
 
 			String musicXml = mvc.converter.getMusicXML();
 			
@@ -64,6 +72,7 @@ public class DrumNotesList {
 			
 			
 			 List<TabMeasure> measureList = score1.getMeasureList();
+		
 			 int noteSize=0;
 
 				 noteSize = getNoteListSizeDrum(score1);	
@@ -82,7 +91,9 @@ public class DrumNotesList {
 			
 			// Create Note list for Drum
 			if(instrumentName.contains("Drum")) {
-				
+				//hashmap drumnotes key
+		
+	
 				for(int i=0; i<measureList.size();i++) {
 					for (int j=0; j<measureList.get(i).getSortedNoteList().size();j++)
 					{	
@@ -90,10 +101,17 @@ public class DrumNotesList {
 				
 						}
 						else {
+							
 							int octiveInt = measureList.get(i).getSortedNoteList().get(j).getModel().getUnpitched().getDisplayOctave();
 							String octive = String.valueOf(octiveInt);
 							String note = measureList.get(i).getSortedNoteList().get(j).getModel().getUnpitched().getDisplayStep();
 							String type = measureList.get(i).getSortedNoteList().get(j).getModel().getType();
+							Note drumNote= measureList.get(i).getSortedNoteList().get(j).getModel();
+							if(drumNote.getNotehead()!=null) {
+								System.out.println("NoteHead string is"+drumNote.getNotehead().toString());
+							}
+							
+							
 							//String notehead= measureList.get(i).getSortedNoteList().get(j).getModel().getNotehead().toString();
 							if(measureList.get(i).getSortedNoteList().get(j).getModel().getChord()==null) 
 								{
@@ -105,8 +123,23 @@ public class DrumNotesList {
 								notePosition[notePositionIndexD1][notePositionIndexD2]=notePositionOnStaff;
 								notePositionIndexD1++;
 								System.out.println(notePositionOnStaff);
+								
+								
+								//hashmap drumnotes list chord
+								List<Note> chordDrumNotes = new ArrayList<Note>();
+								//add this note to hashmap List<Note>
+								chordDrumNotes.add(drumNote);
+								//add key and drumnotes list to hashmap
+								drumNotesList.put(drumNotesListIdx,chordDrumNotes );
+								drumNotesListIdx++;
+								
 								}
 							else {
+								//go back to previous key
+								drumNotesListIdx--;
+								drumNotesList.get(drumNotesListIdx).add(drumNote);
+								drumNotesListIdx++;
+								
 								System.out.println(note+octive );
 								String noteWithOctive = note+octive;
 								int notePositionOnStaff = noteToNumber(noteWithOctive);
@@ -147,9 +180,10 @@ public class DrumNotesList {
 			
 			System.out.printf("clef of this music sheet: %s \n", clef);
 			System.out.printf("instrument: %s \n", instrumentName);
-			
+			System.out.println("hashmap size:" + drumNotesList.size());
 			
 			return notePosition;
+		
 			
 	    }
 	    
@@ -201,4 +235,9 @@ public class DrumNotesList {
 	    	}
 	    	return noteNumber;
 	    }
+
+	    public HashMap<Integer, List<Note>> getDrumNotesMap (){
+	    	return  (HashMap<Integer, List<Note>>) this.drumNotesList;
+	    }
+	    
 }

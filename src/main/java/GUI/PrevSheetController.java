@@ -3,6 +3,7 @@ package GUI;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.fxmisc.richtext.CodeArea;
@@ -34,6 +35,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.scene.paint.Color;
 import models.Part;
+import models.measure.note.Note;
 import models.measure.note.Notehead;
 import models.part_list.PartList;
 import models.part_list.ScorePart;
@@ -74,7 +76,8 @@ public class PrevSheetController extends Application {
 		Text instrumentNameTitle = new Text(450, 100, instrumentName);
 		instrumentNameTitle.setFont(Font.font("Verdana", 50));
 		Group box = new Group();
-
+		//drawDrumNote.getGroup
+		Group drawing=new Group();
 		box.getChildren().add(instrumentNameTitle);
 
 		// Draw Staff
@@ -82,7 +85,12 @@ public class PrevSheetController extends Application {
 			DrumStaff drumStaff = new DrumStaff();
 			drumStaff.draw(box, 0);
 			int[][] notesPositionList = drumNotesList.notesList(mvc);
-			drawDrumNotes.draw(mvc,box, notesPositionList);
+			//hashmap of drum notes map
+			HashMap <Integer, List<Note>>drumNotesMap = drumNotesList.getDrumNotesMap();
+			//draw with 2D array
+			//drawDrumNotes.draw(mvc,box, notesPositionList);
+			drawDrumNotes.drawEverything(drumNotesMap);
+			drawing=drawDrumNotes.getDrawing();
 			
 		} else if (instrumentName.contains("Guitar")) {
 			GuitarStaff guitarStaff = new GuitarStaff();
@@ -92,7 +100,7 @@ public class PrevSheetController extends Application {
 		}
 
 
-		scrollPane.setContent(box);
+		scrollPane.setContent(drawing);
 		scrollPane.setPannable(true);
 		Scene scene = new Scene(scrollPane, 800, 600, Color.AZURE);
 
