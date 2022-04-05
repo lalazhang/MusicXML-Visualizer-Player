@@ -27,15 +27,18 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
+
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -49,12 +52,12 @@ import utility.Range;
 import utility.XmlPlayer;
 
 
-
 public class PrevSheetController extends Application {
 	/**
 	 * MainViewController object to store parent mvc instance
 	 */
 	private MainViewController mvc;
+
 	/**
 	 * XmlPlayer object to use xmlplayer functionality
 	 */
@@ -93,6 +96,7 @@ public class PrevSheetController extends Application {
 	public CodeArea mxlTextPre;
 	@FXML
 	ScrollPane scrollPane;
+
 	// public VBox myVBox;
 
 	public String clef;
@@ -104,6 +108,7 @@ public class PrevSheetController extends Application {
 	DrawDrumNotes drawDrumNotes = new DrawDrumNotes();
 	DrawGuitarNotes drawGuitarNotes = new DrawGuitarNotes();
 	@FXML
+
 
 	public void initialize() {
 		// mxlTextPre.setParagraphGraphicFactory(LineNumberFactory.get(mxlTextPre));
@@ -160,7 +165,9 @@ public class PrevSheetController extends Application {
 			
 		});
 
+
 	}
+
 
 	@Override
 
@@ -220,39 +227,14 @@ public class PrevSheetController extends Application {
 
 
 
+
 	public String getInstrumentName(Score score) throws TXMLException {
 
 		String instrumentName = score.getModel().getPartList().getScoreParts().get(0).getPartName();
 		return instrumentName;
 	}
 
-	/**
-	 * Creates mvc instance using main view mvc and takes the converted xml string
-	 * from main view to play score
-	 * 
-	 * @param mvcInput
-	 * @param str
-	 * @throws Exception
-	 */
-	public void setMainViewController(MainViewController mvcInput, String str) throws Exception {
-		mvc = mvcInput;
-		xmlstr = str;
 
-//		for(int i=0; i<mvc.converter.getScore().getMeasureList().size();i++) {
-//			System.out.println("Measure: "+i);
-//			for (int j=0; j<mvc.converter.getScore().getMeasureList().get(i).tabStringList.size();j++)
-//			
-//			{
-////		System.out.println(mvc.converter.getScore().getMeasureList().get(0).tabStringList.get(0).getNoteList().get(i).getModel().getChord());
-
-//			}
-//		}
-		playing =false;
-		mp = new XmlPlayer(mvc, xmlstr);
-		labelTimeCur.setText("00:00");
-
-	}
-//	converter.getScore().getModel(); PartList pl = sp.getPartList(); pl.getScoreParts().get(0).getPartName();
 
 
 	@FXML
@@ -355,4 +337,5 @@ public class PrevSheetController extends Application {
 		mvc.convertWindow.hide();
 		cancelTimer();
 	}
+
 }
