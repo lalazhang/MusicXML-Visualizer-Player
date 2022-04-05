@@ -43,7 +43,7 @@ public class PlayMusicController extends Application {
 	private String xmlstr;
 	private static Window convertWindow = new Stage();
 	private float time, temp;
-	private boolean playing;
+	public boolean playing;
 	private Timer timer;
 	private TimerTask task;
 	@FXML
@@ -92,6 +92,7 @@ public class PlayMusicController extends Application {
 
 //			}
 //		}
+		playing =false;
 		mp = new XmlPlayer(mvc, xmlstr);
 		labelTimeCur.setText("00:00");
 
@@ -135,8 +136,8 @@ public class PlayMusicController extends Application {
 
 		tempSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
 			temp = newValue.floatValue();
-			if (mp.inst.equals("Guitar")) {
-				if (mp.getManagedPlayer().isStarted()) {
+			
+				if (mp.getManagedPlayer()!=null && !mp.getManagedPlayer().isFinished()) {
 
 					try {
 
@@ -150,30 +151,22 @@ public class PlayMusicController extends Application {
 					}
 
 				}
-			} else {
-				//TODO set tempo for drumset playback
-
-			}
+			
 		});
 
 	}
 
 	@FXML
 	private void playMusicHandle() throws Exception {
-
+		playing=true;
 		mvc.converter.update();
-		mp.play();
 		beginTimer();
-
-//		while(mp.getManagedPlayer().isPlaying()) {
-//			songSlider.setValue(mp.getManagedPlayer().getTickPosition()/(double)mp.getManagedPlayer().getTickLength()*100.0);
-//		}
-
+		mp.play();
+		
 	}
 
 	public void beginTimer() {
-		playing = true;
-		
+
 		timer = new Timer();
 		task = new TimerTask() {
 			public void run() {
@@ -188,24 +181,10 @@ public class PlayMusicController extends Application {
 					Platform.runLater(new Runnable() {
 						@Override
 						public void run() {
-							try {
-								if (mvc.converter.getScore().getModel().getPartList().getScoreParts().get(0)
-										.getPartName().equals("Guitar")) {
-
-									labelTimeCur.setText(mp.getCurTime());
-									labelTimeEnd.setText(mp.getDuration());
-									if (dur != 0) {
-										songSlider.setValue(((double) cur / (double) dur) * 100);
-									}
-								} else {
-
-									if (dur != 0) {
-										songSlider.setValue(((double) cur / (double) dur) * 100);
-									}
-								}
-							} catch (TXMLException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+							labelTimeCur.setText(mp.getCurTime());
+							labelTimeEnd.setText(mp.getDuration());
+							if (dur != 0) {
+								songSlider.setValue(((double) cur / (double) dur) * 100);
 							}
 						}
 					});
@@ -225,7 +204,6 @@ public class PlayMusicController extends Application {
 	}
 	
 	public void cancelTimer() {
-		playing = false;
 		timer.cancel();
 	}
 	
@@ -234,19 +212,29 @@ public class PlayMusicController extends Application {
 	}
 
 	@FXML
-	private void pauseMusicHandle() {
+	private void pauseMusicHandle() throws InterruptedException {
+		playing=false;
 		mp.pause();
-		timer.cancel();
+		cancelTimer();
 	}
+	/*
+	 * 
+	 */
+	public boolean isPlaying() {
+		return this.playing;
+	}
+
 
 	public void setBPM(double bpm) {
 		tempSlider.setValue(bpm);
 	}
 	
+
 	@FXML
-	private void exit() {
+	public void exit() {
+		playing=false;
 		mp.getManagedPlayer().finish();
 		mvc.convertWindow.hide();
-		timer.cancel();
+		cancelTimer();
 	}
 }
