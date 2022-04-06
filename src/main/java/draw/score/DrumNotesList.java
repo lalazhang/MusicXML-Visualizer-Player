@@ -107,6 +107,8 @@ public class DrumNotesList {
 							String note = measureList.get(i).getSortedNoteList().get(j).getModel().getUnpitched().getDisplayStep();
 							String type = measureList.get(i).getSortedNoteList().get(j).getModel().getType();
 							Note drumNote= measureList.get(i).getSortedNoteList().get(j).getModel();
+							System.out.printf("measure is %d \n", measureList.get(i).getModel().getNumber());
+							;
 							if(drumNote.getNotehead()!=null) {
 								System.out.println("NoteHead string is"+drumNote.getNotehead().toString());
 							}

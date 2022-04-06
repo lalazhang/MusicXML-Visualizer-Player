@@ -201,11 +201,11 @@ public class PrevSheetController extends Application {
 		//drawDrumNote.getGroup
 		Group drawing=new Group();
 		box.getChildren().add(instrumentNameTitle);
-
+		drawing.getChildren().add(instrumentNameTitle);
 		// Draw Staff
 		if (instrumentName.contains("Drum")) {
 			DrumStaff drumStaff = new DrumStaff();
-			drumStaff.draw(box, 0);
+			drumStaff.draw(drawing, 0);
 			int[][] notesPositionList = drumNotesList.notesList(mvc);
 			//hashmap of drum notes map
 			HashMap <Integer, List<Note>>drumNotesMap = drumNotesList.getDrumNotesMap();
@@ -216,9 +216,9 @@ public class PrevSheetController extends Application {
 			
 		} else if (instrumentName.contains("Guitar")) {
 			GuitarStaff guitarStaff = new GuitarStaff();
-			guitarStaff.draw(box, 0);
+			guitarStaff.draw(drawing, 0);
 			int[][] notesPositionList = guitarNotesList.notesList(mvc);
-			drawGuitarNotes.draw(mvc,box, notesPositionList);
+			drawGuitarNotes.draw(mvc,drawing, notesPositionList);
 		}
 
 
