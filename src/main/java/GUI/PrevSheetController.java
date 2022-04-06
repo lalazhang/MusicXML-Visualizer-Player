@@ -211,7 +211,7 @@ public class PrevSheetController extends Application {
 			HashMap <Integer, List<Note>>drumNotesMap = drumNotesList.getDrumNotesMap();
 			//draw with 2D array
 			//drawDrumNotes.draw(mvc,box, notesPositionList);
-			drawDrumNotes.drawEverything(drumNotesMap);
+			drawDrumNotes.drawEverything(drumNotesMap,mvc);
 			drawing=drawDrumNotes.getDrawing();
 			
 		} else if (instrumentName.contains("Guitar")) {

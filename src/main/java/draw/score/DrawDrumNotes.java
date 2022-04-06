@@ -136,8 +136,19 @@ public class DrawDrumNotes {
 		
 
 	}
-	public void drawEverything(HashMap <Integer, List<Note>>drumNotesMap ) {
+	public void drawEverything(HashMap <Integer, List<Note>>drumNotesMap,MainViewController mvc ) throws TXMLException {
 		//Loop through drum notes hashmap
+		Score score1 = mvc.converter.getScore();
+		List<Part> partList = score1.getModel().getParts();	
+		//System.out.println("score counts: "+score1.getModel().getScoreCount());		
+		String clef = partList.get(0).getMeasures().get(0).getAttributes().clef.sign;
+
+		Line clef1 = new Line(105, 220, 105, 240);
+		Line clef2 = new Line(110, 220, 110, 240);
+		clef1.setStrokeWidth(4);
+		clef2.setStrokeWidth(4);
+		group.getChildren().add(clef1);
+		group.getChildren().add(clef2);
 		for(HashMap.Entry<Integer,List<Note>> entry: drumNotesMap.entrySet()) {
 			int keyValue=entry.getKey();
 			System.out.printf("hashmap key: %d",keyValue);
