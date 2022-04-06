@@ -333,7 +333,7 @@ public class MainViewController extends Application {
 	@FXML
 
 
-	private void previewButtonHandle() throws IOException, TXMLException {
+	private void previewButtonHandle() throws Exception {
 
 
 //		System.out.println("Preview Button Clicked!");
