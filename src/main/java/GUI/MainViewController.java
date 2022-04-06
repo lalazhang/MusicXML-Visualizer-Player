@@ -333,6 +333,9 @@ public class MainViewController extends Application {
 	@FXML
 
 
+
+
+
 	private void previewButtonHandle() throws IOException, TXMLException {
 
 
@@ -358,10 +361,11 @@ public class MainViewController extends Application {
 
 			PrevSheetController controller =loader.getController();
 			controller.setMainViewController(this);
+
 			Scene scene = root.getScene();
 			stage.setScene(scene);
 
-			
+
 			try {
 				convertWindow = this.openNewWindow(root, "Music Sheet");
 			} catch (Exception e) {

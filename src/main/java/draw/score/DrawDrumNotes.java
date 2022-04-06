@@ -1,5 +1,8 @@
 package draw.score;
 
+
+import java.util.HashMap;
+
 import java.util.List;
 
 import GUI.MainViewController;
@@ -13,7 +16,10 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import models.Part;
 
+import models.measure.note.Note;
+
 public class DrawDrumNotes {
+	private Group group = new Group();
 
 	public DrawDrumNotes() {
 		super();
@@ -21,6 +27,9 @@ public class DrawDrumNotes {
 
 	}
 	
+
+	//draw based on 2D array, to be deleted
+
 	public void draw(MainViewController mvc,Group box, int[][] notesPositionList) throws TXMLException {
 		int noteHeightDrum = 0;
 		// get clef	
@@ -69,4 +78,59 @@ public class DrawDrumNotes {
 
 	}
 	
+
+	public void drawNote(int mapKey, int noteHeight, int rowIndex) {
+		Line noteLine = new Line(135 + 25.0 * mapKey, 200 - 5.0 * noteHeight + 90 * rowIndex,
+				135 + 25.0 * mapKey, 250 - 5.0 * noteHeight + 90 * rowIndex);
+		Circle note = new Circle(130 + 25.0 * mapKey,
+				250.0 - 5.0 * noteHeight + 90 * rowIndex, 5);
+		note.setFill(Color.MIDNIGHTBLUE);
+		group.getChildren().add(noteLine);
+		group.getChildren().add(note);
+		
+	}
+	
+	
+	public void drawNoteHead(int mapKey, int noteHeight, int rowIndex) {
+		Line line1= new Line(130 + 25.0 * mapKey-5,
+				250.0 - 5.0 * noteHeight + 90 * rowIndex-2.5,
+				130 + 25.0 * mapKey+5,
+				250.0 - 5.0 * noteHeight + 90 * rowIndex+2.5);
+		Line line2 = new Line(130 + 25.0 * mapKey-5,
+				250.0 - 5.0 * noteHeight + 90 * rowIndex+2.5,
+				130 + 25.0 * mapKey+5,
+				250.0 - 5.0 * noteHeight + 90 * rowIndex-2.5);
+		group.getChildren().add(line1);
+		group.getChildren().add(line2);
+		
+	}
+	
+	public void drawEverything(HashMap <Integer, List<Note>>drumNotesMap ) {
+		//Loop through drum notes hashmap
+		for(HashMap.Entry<Integer,List<Note>> entry: drumNotesMap.entrySet()) {
+			int keyValue=entry.getKey();
+			System.out.printf("hashmap key: %d",keyValue);
+			List<Note> notesIncludeChord = entry.getValue();
+			for (Note note: notesIncludeChord) {
+				/*
+				 * if(note.getNotehead()==null) {
+				 * System.out.printf("note head is null %d",keyValue); }else {
+				 * System.out.printf("note head is not null %d",keyValue); }
+				 */
+	
+				
+				  if(note.getNotehead()==null) { 
+					  drawNote(keyValue,1,1); } 
+				  else {
+					  drawNoteHead(keyValue,3,1); }
+				 
+			}
+			
+		}
+	}
+	public Group getDrawing() {
+		return this.group;
+	}
+	
+
 }
