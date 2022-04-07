@@ -335,7 +335,7 @@ public class MainViewController extends Application {
 
 
 
-	private void previewButtonHandle() throws IOException, TXMLException {
+	private void previewButtonHandle() throws Exception {
 
 
 //		System.out.println("Preview Button Clicked!");

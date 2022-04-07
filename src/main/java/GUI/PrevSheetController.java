@@ -179,7 +179,7 @@ public class PrevSheetController extends Application {
 
 
 
-		mvc = mvcInput;
+		//mvc = mvcInput;
 
 
 	}
@@ -240,7 +240,7 @@ public class PrevSheetController extends Application {
 		}
 
 
-		scrollPane.setContent(box);
+		scrollPane.setContent(drawing);
 		scrollPane.setPannable(true);
 		
 //		Player initialization
