@@ -37,8 +37,6 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 
 
-
-
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -58,6 +56,7 @@ import models.part_list.PartList;
 import models.part_list.ScorePart;
 import utility.Range;
 import utility.XmlPlayer;
+
 
 public class PrevSheetController extends Application {
 	/**
@@ -104,8 +103,6 @@ public class PrevSheetController extends Application {
 	public CodeArea mxlTextPre;
 	@FXML
 	ScrollPane scrollPane;
-
-
 
 
 	// public VBox myVBox;
@@ -181,7 +178,9 @@ public class PrevSheetController extends Application {
 
 
 
+
 		mvc = mvcInput;
+
 
 	}
 
@@ -216,25 +215,28 @@ public class PrevSheetController extends Application {
 		Group box = new Group();
     Group drawing=new Group();
 		box.getChildren().add(instrumentNameTitle);
-
+		drawing.getChildren().add(instrumentNameTitle);
 		// Draw Staff
 		if (instrumentName.contains("Drum")) {
 			DrumStaff drumStaff = new DrumStaff();
-			drumStaff.draw(box, 0);
+			drumStaff.draw(drawing, 0);
 			int[][] notesPositionList = drumNotesList.notesList(mvc);
-			drawDrumNotes.draw(mvc,box, notesPositionList);
-			
-		} else if (instrumentName.contains("Guitar")) {
-			GuitarStaff guitarStaff = new GuitarStaff();
-			guitarStaff.draw(box, 0);
-			int[][] notesPositionList = guitarNotesList.notesList(mvc);
-      //hashmap of drum notes map
+
+			//hashmap of drum notes map
 			HashMap <Integer, List<Note>>drumNotesMap = drumNotesList.getDrumNotesMap();
 			//draw with 2D array
 			//drawDrumNotes.draw(mvc,box, notesPositionList);
-			drawDrumNotes.drawEverything(drumNotesMap);
+			drawDrumNotes.drawEverything(drumNotesMap,mvc);
 			drawing=drawDrumNotes.getDrawing();
-		
+
+			
+		} else if (instrumentName.contains("Guitar")) {
+			GuitarStaff guitarStaff = new GuitarStaff();
+			guitarStaff.draw(drawing, 0);
+			int[][] notesPositionList = guitarNotesList.notesList(mvc);
+
+			drawGuitarNotes.draw(mvc,drawing, notesPositionList);
+
 		}
 
 
@@ -252,7 +254,9 @@ public class PrevSheetController extends Application {
 
 
 
+
 	public String getInstrumentName(Score score) throws TXMLException {
+
 
 		String instrumentName = score.getModel().getPartList().getScoreParts().get(0).getPartName();
 		return instrumentName;

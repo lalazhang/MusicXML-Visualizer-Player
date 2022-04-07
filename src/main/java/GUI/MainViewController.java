@@ -335,7 +335,6 @@ public class MainViewController extends Application {
 
 
 
-
 	private void previewButtonHandle() throws IOException, TXMLException {
 
 
@@ -365,6 +364,7 @@ public class MainViewController extends Application {
 			Scene scene = root.getScene();
 			stage.setScene(scene);
 
+			
 
 			try {
 				convertWindow = this.openNewWindow(root, "Music Sheet");

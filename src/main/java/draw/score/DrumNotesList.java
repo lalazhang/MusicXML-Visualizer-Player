@@ -20,6 +20,9 @@ public class DrumNotesList {
 	public String clef;
 	private MainViewController mvc;
 
+	private List<Integer> measures = new ArrayList<Integer>();
+	
+
 	public DrumNotesList() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -60,7 +63,7 @@ public class DrumNotesList {
 		
     }
 	
-	    
+	    //this method should be creating HashMap(keyValue, List<Note>), no return value
 	    public int[][] notesList(MainViewController mvc) throws TXMLException  {
 
 	    	int drumNotesListIdx=0;
@@ -83,7 +86,7 @@ public class DrumNotesList {
 
 			 int noteSize=0;
 
-				 noteSize = getNoteListSizeDrum(score1);	
+			noteSize = getNoteListSizeDrum(score1);	
 
 
 			
@@ -114,9 +117,11 @@ public class DrumNotesList {
 							String type = measureList.get(i).getSortedNoteList().get(j).getModel().getType();
 
 							Note drumNote= measureList.get(i).getSortedNoteList().get(j).getModel();
-							if(drumNote.getNotehead()!=null) {
-								System.out.println("NoteHead string is"+drumNote.getNotehead().toString());
-							}
+
+							System.out.printf("measure is %d \n", measureList.get(i).getModel().getNumber());
+							int measure = measureList.get(i).getModel().getNumber();
+							this.measures.add(measure);
+			
 
 							//String notehead= measureList.get(i).getSortedNoteList().get(j).getModel().getNotehead().toString();
 							if(measureList.get(i).getSortedNoteList().get(j).getModel().getChord()==null) 
@@ -250,6 +255,9 @@ public class DrumNotesList {
 
 	    public HashMap<Integer, List<Note>> getDrumNotesMap (){
 	    	return  (HashMap<Integer, List<Note>>) this.drumNotesList;
+	    }
+	    public List<Integer> getMeasures() {
+	    	return this.measures;
 	    }
 	    
 
