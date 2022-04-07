@@ -1,5 +1,6 @@
 package draw.score;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -19,6 +20,7 @@ import models.measure.note.Note;
 
 public class DrawDrumNotes {
 	private Group group = new Group();
+
 	public DrawDrumNotes() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -75,8 +77,10 @@ public class DrawDrumNotes {
 	}
 	
 	public void drawNote(int horizontalPosition, int stepOctave, int rowIndex) {
-		Line noteLine = new Line(135 + 25.0 * horizontalPosition, 200 - 5.0 * stepOctave + 90 * rowIndex,
-				135 + 25.0 * horizontalPosition, 250 - 5.0 * stepOctave + 90 * rowIndex);
+		Line noteLine = new Line(135 + 25.0 * horizontalPosition, 
+				210 - 5.0 * stepOctave + 90 * rowIndex,
+				135 + 25.0 * horizontalPosition, 
+				250 - 5.0 * stepOctave + 90 * rowIndex);
 		Circle note = new Circle(130 + 25.0 * horizontalPosition,
 				250.0 - 5.0 * stepOctave + 90 * rowIndex, 5);
 		note.setFill(Color.MIDNIGHTBLUE);
@@ -98,7 +102,7 @@ public class DrawDrumNotes {
 				130 + 25.0 * horizontalPosition+5,
 				250.0 - 5.0 * stepOctave + 90 * rowIndex-2.5);
 		Line line = new Line(135 + 25.0 * horizontalPosition, 
-							200 - 5.0 * stepOctave + 90 * rowIndex,
+							210 - 5.0 * stepOctave + 90 * rowIndex,
 							135 + 25.0 * horizontalPosition, 
 							250 - 5.0 * stepOctave + 90 * rowIndex);
 		group.getChildren().add(cross1);
@@ -109,14 +113,14 @@ public class DrawDrumNotes {
 	
 	public void drawDuration4(int horizontalPosition, int stepOctave, int rowIndex) {
 		Line line1 = new Line(135 + 25.0 * horizontalPosition, 
-				200 - 5.0 * stepOctave + 90 * rowIndex,
-				135 + 25.0 * horizontalPosition+8, 
-				200 - 5.0 * stepOctave + 90 * rowIndex);
+				210 - 5.0 * stepOctave + 90 * rowIndex,
+				135 + 25.0 * horizontalPosition+10, 
+				210 - 5.0 * stepOctave + 90 * rowIndex);
 		line1.setStroke(Color.RED);
 		Line line2 = new Line(135 + 25.0 * horizontalPosition, 
-				200 - 5.0 * stepOctave + 90 * rowIndex+3,
-				135 + 25.0 * horizontalPosition+8, 
-				200 - 5.0 * stepOctave + 90 * rowIndex+3);
+				210 - 5.0 * stepOctave + 90 * rowIndex+3,
+				135 + 25.0 * horizontalPosition+10, 
+				210 - 5.0 * stepOctave + 90 * rowIndex+3);
 		line2.setStroke(Color.RED);
 		group.getChildren().add(line1);
 		group.getChildren().add(line2);
@@ -126,15 +130,19 @@ public class DrawDrumNotes {
 	
 	public void drawDuration8(int horizontalPosition, int stepOctave, int rowIndex) {
 		Line line1 = new Line(135 + 25.0 * horizontalPosition, 
-				201 - 5.0 * stepOctave + 90 * rowIndex,
-				135 + 25.0 * horizontalPosition+8, 
-				201 - 5.0 * stepOctave + 90 * rowIndex);
+				211 - 5.0 * stepOctave + 90 * rowIndex,
+				135 + 25.0 * horizontalPosition+10, 
+				211 - 5.0 * stepOctave + 90 * rowIndex);
 		line1.setStroke(Color.RED);
 
 		group.getChildren().add(line1);
 
 		
-
+	}
+	public void drawMeasures(int horizontalPosition,int rowIndex) {
+		Line line = new Line(120,210+90*rowIndex,120,250+90*rowIndex);
+		line.setStrokeWidth(3);
+		group.getChildren().add(line);
 	}
 	public void drawEverything(HashMap <Integer, List<Note>>drumNotesMap,MainViewController mvc ) throws TXMLException {
 		//Loop through drum notes hashmap
@@ -158,6 +166,7 @@ public class DrawDrumNotes {
 			int horizontalPosition = keyValue % 20;
 			DrumStaff drumStaff = new DrumStaff();
 			drumStaff.draw(group, rowIndex);
+			drawMeasures(1,rowIndex);
 			//get display-step
 			String step =entry.getValue().get(0).getUnpitched().getDisplayStep();
 			//get display-octave

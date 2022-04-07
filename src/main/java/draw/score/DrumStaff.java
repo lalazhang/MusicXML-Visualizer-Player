@@ -14,7 +14,11 @@ public class DrumStaff {
 
 	public void draw(Group box, int rowNumber) {
 		for (int i=0;i<5;i++) {
-			staffLine = new Line(100.0,90.0*rowNumber+250.0-10.0*i,900.0,90.0*rowNumber+250.0-10.0*i);
+			staffLine = new Line(
+					100.0,
+					90.0*rowNumber+250.0-10.0*i,
+					900.0,
+					90.0*rowNumber+250.0-10.0*i);
 
 			box.getChildren().add(staffLine);
 
