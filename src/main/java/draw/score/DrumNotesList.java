@@ -20,7 +20,7 @@ public class DrumNotesList {
 	public String clef;
 	private MainViewController mvc;
 
-	private List<Integer> measures = new ArrayList<Integer>();
+	private Map<Integer, Integer> measures = new HashMap<Integer,Integer>();
 	
 
 	public DrumNotesList() {
@@ -63,14 +63,21 @@ public class DrumNotesList {
 		
     }
 	
+    public void createMeasuresList(MainViewController mvc) {
+    	
+    	Score score = mvc.converter.getScore();
+    	 List<TabMeasure> measureList = score.getMeasureList();
+    	int measureListSize= measureList.size();
+    	System.out.println("measure list size is  \n "+ measureListSize);
+    }
+    
+    
 	    //this method should be creating HashMap(keyValue, List<Note>), no return value
 	    public int[][] notesList(MainViewController mvc) throws TXMLException  {
 
 	    	int drumNotesListIdx=0;
 
-
-			String musicXml = mvc.converter.getMusicXML();
-			
+			this.createMeasuresList(mvc);
 			Score score1 = mvc.converter.getScore();
 			
 			//System.out.println(musicXml);
@@ -83,6 +90,7 @@ public class DrumNotesList {
 			
 			
 			 List<TabMeasure> measureList = score1.getMeasureList();
+			 System.out.println("measure list size is  \n "+ measureList.size());
 
 			 int noteSize=0;
 
@@ -119,9 +127,9 @@ public class DrumNotesList {
 							Note drumNote= measureList.get(i).getSortedNoteList().get(j).getModel();
 
 							System.out.printf("measure is %d \n", measureList.get(i).getModel().getNumber());
+							
 							int measure = measureList.get(i).getModel().getNumber();
-							this.measures.add(measure);
-			
+							
 
 							//String notehead= measureList.get(i).getSortedNoteList().get(j).getModel().getNotehead().toString();
 							if(measureList.get(i).getSortedNoteList().get(j).getModel().getChord()==null) 
@@ -144,6 +152,9 @@ public class DrumNotesList {
 								chordDrumNotes.add(drumNote);
 								//add key and drumnotes list to hashmap
 								drumNotesList.put(drumNotesListIdx,chordDrumNotes );
+								//drum notes index +1 only when it's not chord note
+								this.measures.put(drumNotesListIdx,measure);
+								
 								drumNotesListIdx++;
 								
 								}
@@ -256,8 +267,8 @@ public class DrumNotesList {
 	    public HashMap<Integer, List<Note>> getDrumNotesMap (){
 	    	return  (HashMap<Integer, List<Note>>) this.drumNotesList;
 	    }
-	    public List<Integer> getMeasures() {
-	    	return this.measures;
+	    public HashMap<Integer,Integer> getMeasures() {
+	    	return (HashMap<Integer, Integer>) this.measures;
 	    }
 	    
 
