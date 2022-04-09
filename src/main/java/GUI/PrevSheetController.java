@@ -224,9 +224,10 @@ public class PrevSheetController extends Application {
 
 			//hashmap of drum notes map
 			HashMap <Integer, List<Note>>drumNotesMap = drumNotesList.getDrumNotesMap();
+			HashMap<Integer,Integer>drumMeasuresMap = drumNotesList.getMeasures();
 			//draw with 2D array
 			//drawDrumNotes.draw(mvc,box, notesPositionList);
-			drawDrumNotes.drawEverything(drumNotesMap,mvc);
+			drawDrumNotes.drawEverything(drumNotesMap,drumMeasuresMap,mvc);
 			drawing=drawDrumNotes.getDrawing();
 
 			

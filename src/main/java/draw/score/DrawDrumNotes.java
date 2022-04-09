@@ -24,7 +24,8 @@ import models.measure.note.Note;
 
 public class DrawDrumNotes {
 	private Group group = new Group();
-
+	//private HashMap<Integer,Integer> measuresList = new HashMap<Integer,Integer>();
+	//public DrumNotesList drumNotesList= new DrumNotesList();
 	public DrawDrumNotes() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -84,6 +85,7 @@ public class DrawDrumNotes {
 	
 
 	public void drawNote(int horizontalPosition, int stepOctave, int rowIndex) {
+		//distance between 2 notes is 25
 		Line noteLine = new Line(135 + 25.0 * horizontalPosition, 
 				210 - 5.0 * stepOctave + 90 * rowIndex,
 				135 + 25.0 * horizontalPosition, 
@@ -146,15 +148,29 @@ public class DrawDrumNotes {
 
 		
 	}
-	public void drawMeasures(int horizontalPosition,int rowIndex) {
-		Line line = new Line(120,210+90*rowIndex,120,250+90*rowIndex);
+	public void drawMeasures(int horizontalPosition,int rowIndex, int measureNumber) {
+		Line line = new Line(
+				120+horizontalPosition*25,
+				210+90*rowIndex,
+				120+horizontalPosition*25,
+				250+90*rowIndex);
 		line.setStrokeWidth(3);
+		String measureNumberStr = String.valueOf(measureNumber);
+		//draw measure number
+		Text measureNumberText = new Text(120+horizontalPosition*25, 250+90*rowIndex, measureNumberStr);
+		measureNumberText.setFont(Font.font("Verdana", 20));
+		measureNumberText.setFill(Color.CRIMSON);
 		group.getChildren().add(line);
+		group.getChildren().add(measureNumberText);
 	}
-	public void drawEverything(HashMap <Integer, List<Note>>drumNotesMap,MainViewController mvc ) throws TXMLException {
+	
+	public void drawEverything(HashMap <Integer, List<Note>>drumNotesMap,HashMap<Integer,Integer>measuresList,MainViewController mvc ) throws TXMLException {
 		//Loop through drum notes hashmap
+		
 		Score score1 = mvc.converter.getScore();
 		List<Part> partList = score1.getModel().getParts();	
+		//measure is drawn only when measureNumber increases
+		int measureNum=0;
 		//System.out.println("score counts: "+score1.getModel().getScoreCount());		
 		String clef = partList.get(0).getMeasures().get(0).getAttributes().clef.sign;
 
@@ -164,6 +180,24 @@ public class DrawDrumNotes {
 		clef2.setStrokeWidth(4);
 		group.getChildren().add(clef1);
 		group.getChildren().add(clef2);
+		//draw measures
+		
+		System.out.println(measuresList);
+		for (HashMap.Entry<Integer,Integer> entry: measuresList.entrySet()) {
+			int keyValue=entry.getKey();
+			System.out.printf("measure key: %d",keyValue);
+			//20 notes each row
+			int dividend = keyValue, divisor = 20;
+			int rowIndex = dividend / divisor;
+			int horizontalPosition = keyValue % 20;
+			//measure is drawn only when entry.getValue changes
+			if(measureNum<entry.getValue()) {
+				measureNum=entry.getValue();
+				drawMeasures(horizontalPosition, rowIndex,measureNum);
+			}
+			
+		}
+		//draw notes
 		for(HashMap.Entry<Integer,List<Note>> entry: drumNotesMap.entrySet()) {
 			int keyValue=entry.getKey();
 			System.out.printf("hashmap key: %d",keyValue);
@@ -172,8 +206,9 @@ public class DrawDrumNotes {
 			int rowIndex = dividend / divisor;
 			int horizontalPosition = keyValue % 20;
 			DrumStaff drumStaff = new DrumStaff();
+			
 			drumStaff.draw(group, rowIndex);
-			drawMeasures(1,rowIndex);
+			
 			//get display-step
 			String step =entry.getValue().get(0).getUnpitched().getDisplayStep();
 			//get display-octave
