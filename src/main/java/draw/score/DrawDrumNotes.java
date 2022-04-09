@@ -26,6 +26,8 @@ public class DrawDrumNotes {
 	private Group group = new Group();
 	//private HashMap<Integer,Integer> measuresList = new HashMap<Integer,Integer>();
 	//public DrumNotesList drumNotesList= new DrumNotesList();
+	private double distanceBetweenNotes=35.0;
+	private double measureBelowStaff=10.0;
 	public DrawDrumNotes() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -35,62 +37,51 @@ public class DrawDrumNotes {
 
 	//draw based on 2D array, to be deleted
 
-	public void draw(MainViewController mvc,Group box, int[][] notesPositionList) throws TXMLException {
-		int noteHeightDrum = 0;
-		// get clef	
-		Score score1 = mvc.converter.getScore();
-		List<Part> partList = score1.getModel().getParts();	
-		//System.out.println("score counts: "+score1.getModel().getScoreCount());		
-		String clef = partList.get(0).getMeasures().get(0).getAttributes().clef.sign;
-
-		Line line1 = new Line(105, 220, 105, 240);
-		Line line2 = new Line(110, 220, 110, 240);
-		line1.setStrokeWidth(4);
-		line2.setStrokeWidth(4);
-		box.getChildren().add(line2);
-		box.getChildren().add(line1);
-
-		System.out.printf("drum note span size" + String.valueOf(notesPositionList.length));
-		for (int i = 0; i < notesPositionList.length; i++) {
-//			for(int ii=0;i<i%30;ii++) {
-
-			int dividend = i, divisor = 30;
-			int height = dividend / divisor;
-			int horizontalSpan = i % 30;
-			System.out.println("i/30 " + height);
-			System.out.println("i%30 " + horizontalSpan);
-			DrumStaff drumStaff = new DrumStaff();
-			drumStaff.draw(box, height);
-			for (int j = 0; j < notesPositionList[i].length; j++) {
-				noteHeightDrum = notesPositionList[i][j];
-				if (noteHeightDrum < 20) {
-					Line noteLine = new Line(135 + 25.0 * horizontalSpan, 200 - 5.0 * noteHeightDrum + 90 * height,
-							135 + 25.0 * horizontalSpan, 250 - 5.0 * noteHeightDrum + 90 * height);
-					Circle note = new Circle(130 + 25.0 * horizontalSpan,
-							250.0 - 5.0 * noteHeightDrum + 90 * height, 5);
-					note.setFill(Color.MIDNIGHTBLUE);
-
-					box.getChildren().add(noteLine);
-					box.getChildren().add(note);
-				}
-
-			}
-//			}
-
-		}
-
-	
-
-	}
+	/*
+	 * public void draw(MainViewController mvc,Group box, int[][] notesPositionList)
+	 * throws TXMLException { int noteHeightDrum = 0; // get clef Score score1 =
+	 * mvc.converter.getScore(); List<Part> partList = score1.getModel().getParts();
+	 * //System.out.println("score counts: "+score1.getModel().getScoreCount());
+	 * String clef = partList.get(0).getMeasures().get(0).getAttributes().clef.sign;
+	 * 
+	 * Line line1 = new Line(105, 220, 105, 240); Line line2 = new Line(110, 220,
+	 * 110, 240); line1.setStrokeWidth(4); line2.setStrokeWidth(4);
+	 * box.getChildren().add(line2); box.getChildren().add(line1);
+	 * 
+	 * System.out.printf("drum note span size" +
+	 * String.valueOf(notesPositionList.length)); for (int i = 0; i <
+	 * notesPositionList.length; i++) { // for(int ii=0;i<i%30;ii++) {
+	 * 
+	 * int dividend = i, divisor = 30; int height = dividend / divisor; int
+	 * horizontalSpan = i % 30; System.out.println("i/30 " + height);
+	 * System.out.println("i%30 " + horizontalSpan); DrumStaff drumStaff = new
+	 * DrumStaff(); drumStaff.draw(box, height); for (int j = 0; j <
+	 * notesPositionList[i].length; j++) { noteHeightDrum = notesPositionList[i][j];
+	 * if (noteHeightDrum < 20) { Line noteLine = new Line(135 + distanceBetweenNotes *
+	 * horizontalSpan, 200 - 5.0 * noteHeightDrum + 90 * height, 135 + distanceBetweenNotes *
+	 * horizontalSpan, 250 - 5.0 * noteHeightDrum + 90 * height); Circle note = new
+	 * Circle(130 + distanceBetweenNotes * horizontalSpan, 250.0 - 5.0 * noteHeightDrum + 90 *
+	 * height, 5); note.setFill(Color.MIDNIGHTBLUE);
+	 * 
+	 * box.getChildren().add(noteLine); box.getChildren().add(note); }
+	 * 
+	 * } // }
+	 * 
+	 * }
+	 * 
+	 * 
+	 * 
+	 * }
+	 */
 	
 
 	public void drawNote(int horizontalPosition, int stepOctave, int rowIndex) {
 		//distance between 2 notes is 25
-		Line noteLine = new Line(135 + 25.0 * horizontalPosition, 
-				210 - 5.0 * stepOctave + 90 * rowIndex,
-				135 + 25.0 * horizontalPosition, 
+		Line noteLine = new Line(135 + distanceBetweenNotes * horizontalPosition, 
+				220 - 5.0 * stepOctave + 90 * rowIndex,
+				135 + distanceBetweenNotes * horizontalPosition, 
 				250 - 5.0 * stepOctave + 90 * rowIndex);
-		Circle note = new Circle(130 + 25.0 * horizontalPosition,
+		Circle note = new Circle(130 + distanceBetweenNotes * horizontalPosition,
 				250.0 - 5.0 * stepOctave + 90 * rowIndex, 5);
 		note.setFill(Color.MIDNIGHTBLUE);
 		group.getChildren().add(noteLine);
@@ -102,17 +93,17 @@ public class DrawDrumNotes {
 	
 	
 	public void drawNoteHead(int horizontalPosition, int stepOctave, int rowIndex) {
-		Line cross1= new Line(130 + 25.0 * horizontalPosition-5,
+		Line cross1= new Line(130 + distanceBetweenNotes * horizontalPosition-5,
 				250.0 - 5.0 * stepOctave + 90 * rowIndex-2.5,
-				130 + 25.0 * horizontalPosition+5,
+				130 + distanceBetweenNotes * horizontalPosition+5,
 				250.0 - 5.0 * stepOctave + 90 * rowIndex+2.5);
-		Line cross2 = new Line(130 + 25.0 * horizontalPosition-5,
+		Line cross2 = new Line(130 + distanceBetweenNotes * horizontalPosition-5,
 				250.0 - 5.0 * stepOctave + 90 * rowIndex+2.5,
-				130 + 25.0 * horizontalPosition+5,
+				130 + distanceBetweenNotes * horizontalPosition+5,
 				250.0 - 5.0 * stepOctave + 90 * rowIndex-2.5);
-		Line line = new Line(135 + 25.0 * horizontalPosition, 
-							210 - 5.0 * stepOctave + 90 * rowIndex,
-							135 + 25.0 * horizontalPosition, 
+		Line line = new Line(135 + distanceBetweenNotes * horizontalPosition, 
+							220 - 5.0 * stepOctave + 90 * rowIndex,
+							135 + distanceBetweenNotes * horizontalPosition, 
 							250 - 5.0 * stepOctave + 90 * rowIndex);
 		group.getChildren().add(cross1);
 		group.getChildren().add(cross2);
@@ -121,15 +112,15 @@ public class DrawDrumNotes {
 	}
 	
 	public void drawDuration4(int horizontalPosition, int stepOctave, int rowIndex) {
-		Line line1 = new Line(135 + 25.0 * horizontalPosition, 
-				210 - 5.0 * stepOctave + 90 * rowIndex,
-				135 + 25.0 * horizontalPosition+10, 
-				210 - 5.0 * stepOctave + 90 * rowIndex);
+		Line line1 = new Line(135 + distanceBetweenNotes * horizontalPosition, 
+				220 - 5.0 * stepOctave + 90 * rowIndex,
+				135 + distanceBetweenNotes * horizontalPosition+10, 
+				220 - 5.0 * stepOctave + 90 * rowIndex);
 		line1.setStroke(Color.RED);
-		Line line2 = new Line(135 + 25.0 * horizontalPosition, 
-				210 - 5.0 * stepOctave + 90 * rowIndex+3,
-				135 + 25.0 * horizontalPosition+10, 
-				210 - 5.0 * stepOctave + 90 * rowIndex+3);
+		Line line2 = new Line(135 + distanceBetweenNotes * horizontalPosition, 
+				220 - 5.0 * stepOctave + 90 * rowIndex+3,
+				135 + distanceBetweenNotes * horizontalPosition+10, 
+				220 - 5.0 * stepOctave + 90 * rowIndex+3);
 		line2.setStroke(Color.RED);
 		group.getChildren().add(line1);
 		group.getChildren().add(line2);
@@ -138,10 +129,10 @@ public class DrawDrumNotes {
 	}
 	
 	public void drawDuration8(int horizontalPosition, int stepOctave, int rowIndex) {
-		Line line1 = new Line(135 + 25.0 * horizontalPosition, 
-				211 - 5.0 * stepOctave + 90 * rowIndex,
-				135 + 25.0 * horizontalPosition+10, 
-				211 - 5.0 * stepOctave + 90 * rowIndex);
+		Line line1 = new Line(135 + distanceBetweenNotes * horizontalPosition, 
+				221 - 5.0 * stepOctave + 90 * rowIndex,
+				135 + distanceBetweenNotes * horizontalPosition+10, 
+				221 - 5.0 * stepOctave + 90 * rowIndex);
 		line1.setStroke(Color.RED);
 
 		group.getChildren().add(line1);
@@ -150,14 +141,14 @@ public class DrawDrumNotes {
 	}
 	public void drawMeasures(int horizontalPosition,int rowIndex, int measureNumber) {
 		Line line = new Line(
-				120+horizontalPosition*25,
+				120+distanceBetweenNotes * horizontalPosition,
 				210+90*rowIndex,
-				120+horizontalPosition*25,
+				120+distanceBetweenNotes * horizontalPosition,
 				250+90*rowIndex);
 		line.setStrokeWidth(3);
 		String measureNumberStr = String.valueOf(measureNumber);
 		//draw measure number
-		Text measureNumberText = new Text(120+horizontalPosition*25, 250+90*rowIndex, measureNumberStr);
+		Text measureNumberText = new Text(120+distanceBetweenNotes * horizontalPosition, 250+90*rowIndex+measureBelowStaff, measureNumberStr);
 		measureNumberText.setFont(Font.font("Verdana", 20));
 		measureNumberText.setFill(Color.CRIMSON);
 		group.getChildren().add(line);
