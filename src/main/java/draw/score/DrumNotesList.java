@@ -126,7 +126,7 @@ public class DrumNotesList {
 
 							Note drumNote= measureList.get(i).getSortedNoteList().get(j).getModel();
 
-							System.out.printf("measure is %d \n", measureList.get(i).getModel().getNumber());
+//							System.out.printf("measure is %d \n", measureList.get(i).getModel().getNumber());
 							
 							int measure = measureList.get(i).getModel().getNumber();
 							
@@ -165,7 +165,7 @@ public class DrumNotesList {
 								drumNotesListIdx++;
 								
 
-								System.out.println(note+octive );
+//								System.out.println(note+octive );
 								String noteWithOctive = note+octive;
 								int notePositionOnStaff = noteToNumber(noteWithOctive);
 								notePositionIndexD2=1;
@@ -193,7 +193,7 @@ public class DrumNotesList {
 				}
 				
 			}
-			System.out.println("note size: "+ noteSize);
+//			System.out.println("note size: "+ noteSize);
 			int printStr11 = score1.getMeasureList().size();
 			
 			List<Part> partList = score1.getModel().getParts();
