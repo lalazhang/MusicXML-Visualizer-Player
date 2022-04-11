@@ -181,11 +181,12 @@ public class DrawDrumNotes {
 		group.getChildren().add(clef1);
 		group.getChildren().add(clef2);
 		//draw measures
-		
-		System.out.println(measuresList);
+
+//		System.out.println(measuresList);
 		for (HashMap.Entry<Integer,Integer> entry: measuresList.entrySet()) {
+
 			int keyValue=entry.getKey();
-			System.out.printf("measure key: %d",keyValue);
+//			System.out.printf("measure key: %d",keyValue);
 			//20 notes each row
 			int dividend = keyValue, divisor = 20;
 			int rowIndex = dividend / divisor;
@@ -197,18 +198,29 @@ public class DrawDrumNotes {
 			}
 			
 		}
+		
 		//draw notes
 		for(HashMap.Entry<Integer,List<Note>> entry: drumNotesMap.entrySet()) {
 			int keyValue=entry.getKey();
 			System.out.printf("hashmap key: %d",keyValue);
+			
 			//20 notes each row
 			int dividend = keyValue, divisor = 20;
 			int rowIndex = dividend / divisor;
 			int horizontalPosition = keyValue % 20;
+			//20 notes each row
+//			int dividend = keyValue, divisor = 20;
+//			System.out.println("Kayvalue: "+keyValue);
+
+			System.out.println("\ndividend: "+dividend);
+//			int rowIndex = dividend / divisor;		
+			System.out.println("rowIndex: "+rowIndex);
+//			int horizontalPosition = keyValue % 20;
+			System.out.println("horizontalPosition: "+horizontalPosition);
 			DrumStaff drumStaff = new DrumStaff();
-			
-			drumStaff.draw(group, rowIndex);
-			
+
+			drumStaff.draw(group, rowIndex);			
+
 			//get display-step
 			String step =entry.getValue().get(0).getUnpitched().getDisplayStep();
 			//get display-octave
@@ -217,7 +229,6 @@ public class DrawDrumNotes {
 			//combine step and octave to use noteToNumber to get position on staff
 			String stepWithOctave = step+octave;
 			int stepOctave = noteToNumber(stepWithOctave);
-		
 			
 			if (entry.getValue().get(0).getDuration()==null) {}
 			else {int duration=entry.getValue().get(0).getDuration();
@@ -225,7 +236,10 @@ public class DrawDrumNotes {
 			if(duration==4) {  drawDuration4( horizontalPosition, stepOctave, rowIndex);}else if(duration==8) {
 				drawDuration8( horizontalPosition, stepOctave, rowIndex);
 			}}
-				
+			System.out.println("Step with Octave: "+stepWithOctave);
+
+			System.out.println("StepOctave: "+stepOctave);
+
 			List<Note> notesIncludeChord = entry.getValue();
 			for (Note note: notesIncludeChord) {
 				/*
@@ -237,12 +251,16 @@ public class DrawDrumNotes {
 				//get display-step
 				step =note.getUnpitched().getDisplayStep();
 				//get display-octave
-			 octaveInt = note.getUnpitched().getDisplayOctave();
-				 octave = String.valueOf(octaveInt);
+				octaveInt = note.getUnpitched().getDisplayOctave();
+				octave = String.valueOf(octaveInt);
 				//combine step and octave to use noteToNumber to get position on staff
 				stepWithOctave = step+octave;
 				stepOctave = noteToNumber(stepWithOctave);
-				System.out.printf("hashmap %s is %d",stepWithOctave,stepOctave);
+//				System.out.printf("hashmap %s is %d",stepWithOctave,stepOctave);
+				System.out.println("Step with Octave: "+stepWithOctave);
+
+				System.out.println("StepOctave: "+stepOctave);
+
 				String type = note.getType();
 				  if(note.getNotehead()==null) { 
 					  drawNote(horizontalPosition,stepOctave,rowIndex);
@@ -260,7 +278,7 @@ public class DrawDrumNotes {
 
 	public int noteToNumber (String noteWithOctive) {
     	// noteNumber indicates the location of the note on staff
-    	System.out.print(noteWithOctive);
+//    	System.out.print(noteWithOctive);
 
     	int noteNumber=0;
     	//noteNumber set as 0 means E4 so it sits on the bottom line of 5 staff lines

@@ -48,7 +48,7 @@ public class DrumNotesList {
 			{	
 				
 				int duration=measureList.get(i).getSortedNoteList().get(j).duration;
-				System.out.println("duration: "+duration);
+//				System.out.println("duration: "+duration);
 				
 				/*
 				 * if(measureList.get(i).getSortedNoteList().get(j).getModel().getChord()==null)
@@ -66,9 +66,15 @@ public class DrumNotesList {
     public void createMeasuresList(MainViewController mvc) {
     	
     	Score score = mvc.converter.getScore();
+<<<<<<< HEAD
     	 List<TabMeasure> measureList = score.getMeasureList();
     	int measureListSize= measureList.size();
     	System.out.println("measure list size is  \n "+ measureListSize);
+=======
+    	List<TabMeasure> measureList = score.getMeasureList();
+    	int measureListSize= measureList.size();
+//    	System.out.println("measure list size is  \n "+ measureListSize);
+>>>>>>> origin/develop
     }
     
     
@@ -90,7 +96,11 @@ public class DrumNotesList {
 			
 			
 			 List<TabMeasure> measureList = score1.getMeasureList();
+<<<<<<< HEAD
 			 System.out.println("measure list size is  \n "+ measureList.size());
+=======
+//			 System.out.println("measure list size is  \n "+ measureList.size());
+>>>>>>> origin/develop
 
 			 int noteSize=0;
 
@@ -98,9 +108,9 @@ public class DrumNotesList {
 
 
 			
-			
+//			
 			int notePosition[][] = new int[noteSize][2] ;
-			
+//			
 			//Make default position 20 and 20 is ignored while drawing notes
 			for (int i=0;i<noteSize;i++) {
 				notePosition[i][1]=20;
@@ -126,7 +136,11 @@ public class DrumNotesList {
 
 							Note drumNote= measureList.get(i).getSortedNoteList().get(j).getModel();
 
+<<<<<<< HEAD
 							System.out.printf("measure is %d \n", measureList.get(i).getModel().getNumber());
+=======
+//							System.out.printf("measure is %d \n", measureList.get(i).getModel().getNumber());
+>>>>>>> origin/develop
 							
 							int measure = measureList.get(i).getModel().getNumber();
 							
@@ -134,14 +148,14 @@ public class DrumNotesList {
 							//String notehead= measureList.get(i).getSortedNoteList().get(j).getModel().getNotehead().toString();
 							if(measureList.get(i).getSortedNoteList().get(j).getModel().getChord()==null) 
 								{
-								notePositionIndexD2=0;
-								System.out.println("\n"+note +octive);
+//								notePositionIndexD2=0;
+//								System.out.println("\n"+note +octive);
 								String noteWithOctive = note+octive;
 								//System.out.println(noteWithOctive);
-								int notePositionOnStaff = noteToNumber(noteWithOctive);
-								notePosition[notePositionIndexD1][notePositionIndexD2]=notePositionOnStaff;
-								notePositionIndexD1++;
-								System.out.println(notePositionOnStaff);
+//								int notePositionOnStaff = noteToNumber(noteWithOctive);
+//								notePosition[notePositionIndexD1][notePositionIndexD2]=notePositionOnStaff;
+//								notePositionIndexD1++;
+//								System.out.println(notePositionOnStaff);
 
 
 								
@@ -151,10 +165,17 @@ public class DrumNotesList {
 								//add this note to hashmap List<Note>
 								chordDrumNotes.add(drumNote);
 								//add key and drumnotes list to hashmap
+<<<<<<< HEAD
 								drumNotesList.put(drumNotesListIdx,chordDrumNotes );
 								//drum notes index +1 only when it's not chord note
 								this.measures.put(drumNotesListIdx,measure);
 								
+=======
+								drumNotesList.put(drumNotesListIdx,chordDrumNotes);
+								//drum notes index +1 only when it's not chord note
+								this.measures.put(drumNotesListIdx,measure);
+							
+>>>>>>> origin/develop
 								drumNotesListIdx++;
 								
 								}
@@ -165,13 +186,13 @@ public class DrumNotesList {
 								drumNotesListIdx++;
 								
 
-								System.out.println(note+octive );
-								String noteWithOctive = note+octive;
-								int notePositionOnStaff = noteToNumber(noteWithOctive);
-								notePositionIndexD2=1;
-								notePositionIndexD1--;
-								notePosition[notePositionIndexD1][notePositionIndexD2]=notePositionOnStaff;
-								notePositionIndexD1++;
+//								System.out.println(note+octive );
+//								String noteWithOctive = note+octive;
+//								int notePositionOnStaff = noteToNumber(noteWithOctive);
+//								notePositionIndexD2=1;
+//								notePositionIndexD1--;
+//								notePosition[notePositionIndexD1][notePositionIndexD2]=notePositionOnStaff;
+//								notePositionIndexD1++;
 								
 							}
 					
@@ -186,13 +207,13 @@ public class DrumNotesList {
 			}
 			
 		
-			
-			for (int i=0; i<notePosition.length;i++) {
-				for (int j=0; j<notePosition[i].length;j++) {
-					//System.out.println(notePosition[i][j]);
-				}
-				
-			}
+//			
+//			for (int i=0; i<notePosition.length;i++) {
+//				for (int j=0; j<notePosition[i].length;j++) {
+//					//System.out.println(notePosition[i][j]);
+//				}
+//				
+//			}
 			System.out.println("note size: "+ noteSize);
 			int printStr11 = score1.getMeasureList().size();
 			
@@ -202,11 +223,11 @@ public class DrumNotesList {
 			clef = partList.get(0).getMeasures().get(0).getAttributes().clef.sign;
 			
 			
-			
-			System.out.printf("clef of this music sheet: %s \n", clef);
-			System.out.printf("instrument: %s \n", instrumentName);
-
-			System.out.println("hashmap size:" + drumNotesList.size());
+//			
+//			System.out.printf("clef of this music sheet: %s \n", clef);
+//			System.out.printf("instrument: %s \n", instrumentName);
+//
+//			System.out.println("hashmap size:" + drumNotesList.size());
 			
 			return notePosition;
 		
@@ -216,7 +237,7 @@ public class DrumNotesList {
 	    
 	    public int noteToNumber (String noteWithOctive) {
 	    	// noteNumber indicates the location of the note on staff
-	    	System.out.print(noteWithOctive);
+//	    	System.out.print(noteWithOctive);
 
 	    	int noteNumber=0;
 	    	//noteNumber set as 0 means E4 so it sits on the bottom line of 5 staff lines
