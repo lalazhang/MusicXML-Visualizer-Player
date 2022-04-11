@@ -213,9 +213,10 @@ public class PrevSheetController extends Application {
 		Text instrumentNameTitle = new Text(450, 100, instrumentName);
 		instrumentNameTitle.setFont(Font.font("Verdana", 50));
 		Group box = new Group();
-    Group drawing=new Group();
+		Group drawing=new Group();
 		box.getChildren().add(instrumentNameTitle);
 		drawing.getChildren().add(instrumentNameTitle);
+//		System.out.println(instrumentName); 
 		// Draw Staff
 		if (instrumentName.contains("Drum")) {
 			DrumStaff drumStaff = new DrumStaff();
@@ -233,14 +234,15 @@ public class PrevSheetController extends Application {
 			
 		} else if (instrumentName.contains("Guitar")) {
 			GuitarStaff guitarStaff = new GuitarStaff();
-			guitarStaff.draw(drawing, 0);
 			int[][] notesPositionList = guitarNotesList.notesList(mvc);
-
-			drawGuitarNotes.draw(mvc,drawing, notesPositionList);
+			//hashmap of Guitar notes map and measures
+			HashMap <Integer, List<Note>>guitarNotesMap = guitarNotesList.getGuitarNotesMap();
+			HashMap<Integer,Integer>guitarMeasuresMap = guitarNotesList.getMeasures();
+			//draw with Map
+			drawGuitarNotes.drawEverything(guitarNotesMap,guitarMeasuresMap,mvc);
+			drawing=drawGuitarNotes.getDrawing();
 
 		}
-
-
 		scrollPane.setContent(drawing);
 		scrollPane.setPannable(true);
 		
@@ -364,7 +366,9 @@ public class PrevSheetController extends Application {
 		playing=false;
 		mp.getManagedPlayer().finish();
 		mvc.convertWindow.hide();
+		if(timer!=null){
 		cancelTimer();
+		}
 	}
 
 
