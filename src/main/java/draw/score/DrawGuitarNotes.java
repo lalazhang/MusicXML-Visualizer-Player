@@ -310,7 +310,7 @@ public class DrawGuitarNotes {
 				if(hasGrace(note)) {
 //					draw grace notes
 					drawGrace(horizontalPosition, stringPosition, rowIndex, fret);
-					System.out.println("Grace note:" + fret);
+//					System.out.println("Grace note:" + fret);
 				} else{
 //					Draw Notes
 					drawNote(horizontalPosition, stringPosition, rowIndex, fret);
