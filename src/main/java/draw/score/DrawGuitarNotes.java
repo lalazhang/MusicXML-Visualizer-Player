@@ -25,6 +25,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import models.Part;
 import models.measure.note.Note;
+import utility.Settings;
 
 public class DrawGuitarNotes {
 	private Group group = new Group();
@@ -154,7 +155,16 @@ public class DrawGuitarNotes {
 		GuitarStaff guitarStaff = new GuitarStaff();
 		int temp = 0;
 		String clef = partList.get(0).getMeasures().get(0).getAttributes().clef.sign;
-
+		
+		int nume = Settings.getInstance().tsNum;
+		int denom = Settings.getInstance().tsDen;
+		Text timeSigNume = new Text(125, 365, ""+nume);
+		timeSigNume.setFont(Font.font("Verdana", 20));
+		Text timeSigDenom = new Text(125, 385, ""+denom);
+		timeSigDenom.setFont(Font.font("Verdana", 20));
+		group.getChildren().add(timeSigNume);
+		group.getChildren().add(timeSigDenom);
+		
 		for (HashMap.Entry<Integer, Integer> entry : measuresList.entrySet()) {
 			int keyValue = entry.getKey();
 //			System.out.printf("measure key: %d",keyValue);

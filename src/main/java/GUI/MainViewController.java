@@ -456,13 +456,13 @@ public class MainViewController extends Application {
 					previewButton.setDisable(true);
 					showMXLButton.setDisable(true);
 					// saveTabButton.setDisable(true);
-					playButton.setDisable(true);
+//					playButton.setDisable(true);
 				} else {
 					saveMXLButton.setDisable(false);
 					previewButton.setDisable(false);
 					showMXLButton.setDisable(false);
 					// saveTabButton.setDisable(false);
-					playButton.setDisable(false);
+//					playButton.setDisable(false);
 				}
 				return highlighter.computeHighlighting(text);
 			}
