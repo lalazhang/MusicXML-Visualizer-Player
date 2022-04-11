@@ -338,7 +338,7 @@ public class PrevSheetController extends Application {
 	}
 	@FXML
 	private void handleGotoMeasure() {
-		int measureNumber = Integer.parseInt(gotoMeasureField.getText());
+//		int measureNumber = Integer.parseInt(gotoMeasureField.getText());
 //		if (!goToMeasure(measureNumber)) {
 //			Alert alert = new Alert(Alert.AlertType.ERROR);
 //			alert.setContentText("Measure " + measureNumber + " could not be found.");
@@ -347,7 +347,7 @@ public class PrevSheetController extends Application {
 //		}
 	}
 
-	private boolean goToMeasure(int measureCount) {
+	private void goToMeasure(int measureCount) {
 //		TabMeasure measure = converter.getScore().getMeasure(measureCount);
 //		if (measure == null)
 //			return false;
@@ -356,7 +356,7 @@ public class PrevSheetController extends Application {
 //		mainText.moveTo(pos);
 //		mainText.requestFollowCaret();
 //		mainText.requestFocus();
-		return true;
+		
 	}
 
 	@FXML
