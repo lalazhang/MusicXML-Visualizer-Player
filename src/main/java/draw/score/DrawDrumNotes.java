@@ -26,7 +26,7 @@ public class DrawDrumNotes {
 	private Group group = new Group();
 	//private HashMap<Integer,Integer> measuresList = new HashMap<Integer,Integer>();
 	//public DrumNotesList drumNotesList= new DrumNotesList();
-	private double distanceBetweenNotes=35.0;
+	private double distanceBetweenNotes=40.0;
 	private double measureBelowStaff=10.0;
 	public DrawDrumNotes() {
 		super();
@@ -75,10 +75,11 @@ public class DrawDrumNotes {
 	 */
 	
 
-	public void drawNote(int horizontalPosition, int stepOctave, int rowIndex) {
+	public void drawSolidNote(int horizontalPosition, int stepOctave, int rowIndex) {
 		//distance between 2 notes is 25
+		int noteRadius=4;
 		Line noteLine = new Line(135 + distanceBetweenNotes * horizontalPosition, 
-				220 - 5.0 * stepOctave + 90 * rowIndex,
+				225 - 5.0 * stepOctave + 90 * rowIndex,
 				135 + distanceBetweenNotes * horizontalPosition, 
 				250 - 5.0 * stepOctave + 90 * rowIndex);
 		Circle note = new Circle(130 + distanceBetweenNotes * horizontalPosition,
@@ -89,7 +90,20 @@ public class DrawDrumNotes {
 		
 	}
 	
-	
+	public void drawHalfNote(int horizontalPosition, int stepOctave, int rowIndex) {
+		int noteRadius=4;
+		Line noteLine = new Line(135 + distanceBetweenNotes * horizontalPosition, 
+				225 - 5.0 * stepOctave + 90 * rowIndex,
+				135 + distanceBetweenNotes * horizontalPosition, 
+				250 - 5.0 * stepOctave + 90 * rowIndex);
+		Circle note = new Circle(130 + distanceBetweenNotes * horizontalPosition,
+				250.0 - 5.0 * stepOctave + 90 * rowIndex, 5);
+		note.setFill(Color.TRANSPARENT);
+		note.setStroke(Color.MIDNIGHTBLUE);
+		note.setStrokeWidth(2);
+		group.getChildren().add(note);
+		group.getChildren().add(noteLine);
+	}
 	
 	
 	public void drawNoteHead(int horizontalPosition, int stepOctave, int rowIndex) {
@@ -102,7 +116,7 @@ public class DrawDrumNotes {
 				130 + distanceBetweenNotes * horizontalPosition+5,
 				250.0 - 5.0 * stepOctave + 90 * rowIndex-2.5);
 		Line line = new Line(135 + distanceBetweenNotes * horizontalPosition, 
-							220 - 5.0 * stepOctave + 90 * rowIndex,
+							225 - 5.0 * stepOctave + 90 * rowIndex,
 							135 + distanceBetweenNotes * horizontalPosition, 
 							250 - 5.0 * stepOctave + 90 * rowIndex);
 		group.getChildren().add(cross1);
@@ -112,65 +126,108 @@ public class DrawDrumNotes {
 	}
 	
 	public void drawDuration4(int horizontalPosition, int stepOctave, int rowIndex) {
-		Line line1 = new Line(135 + distanceBetweenNotes * horizontalPosition, 
-				220 - 5.0 * stepOctave + 90 * rowIndex,
+		int durationLength=18;
+		int controlX=14;
+		int controlY=11;
+		int distanceBetweenTwoCurve=7;
+		QuadCurve quadcurve1 = new QuadCurve(
+				135 + distanceBetweenNotes * horizontalPosition, 
+				225 - 5.0 * stepOctave + 90 * rowIndex, 
+				135 + distanceBetweenNotes * horizontalPosition+controlX, 
+				225 - 5.0 * stepOctave + 90 * rowIndex+controlY, 
 				135 + distanceBetweenNotes * horizontalPosition+10, 
-				220 - 5.0 * stepOctave + 90 * rowIndex);
-		line1.setStroke(Color.RED);
-		Line line2 = new Line(135 + distanceBetweenNotes * horizontalPosition, 
-				220 - 5.0 * stepOctave + 90 * rowIndex+3,
+				225 - 5.0 * stepOctave + 90 * rowIndex+durationLength);
+		quadcurve1.setStroke(Color.CRIMSON);
+		quadcurve1.setFill(Color.TRANSPARENT);
+		
+		QuadCurve quadcurve2 = new QuadCurve(
+				135 + distanceBetweenNotes * horizontalPosition, 
+				225 - 5.0 * stepOctave + 90 * rowIndex+distanceBetweenTwoCurve,
+				135 + distanceBetweenNotes * horizontalPosition+controlX, 
+				225 - 5.0 * stepOctave + 90 * rowIndex+controlY, 
 				135 + distanceBetweenNotes * horizontalPosition+10, 
-				220 - 5.0 * stepOctave + 90 * rowIndex+3);
-		line2.setStroke(Color.RED);
-		group.getChildren().add(line1);
-		group.getChildren().add(line2);
+				225 - 5.0 * stepOctave + 90 * rowIndex+distanceBetweenTwoCurve+durationLength);
+		quadcurve2.setStroke(Color.CRIMSON);
+		quadcurve2.setFill(Color.TRANSPARENT);
+		group.getChildren().add(quadcurve1);
+		group.getChildren().add(quadcurve2);
+		
 		
 
 	}
 	
 	public void drawDuration8(int horizontalPosition, int stepOctave, int rowIndex) {
-		Line line1 = new Line(135 + distanceBetweenNotes * horizontalPosition, 
-				221 - 5.0 * stepOctave + 90 * rowIndex,
+		int durationLength=18;
+		int controlX=14;
+		int controlY=11;
+		int distanceBetweenTwoCurve=7;
+		QuadCurve quadcurve1 = new QuadCurve(
+				135 + distanceBetweenNotes * horizontalPosition, 
+				225 - 5.0 * stepOctave + 90 * rowIndex, 
+				135 + distanceBetweenNotes * horizontalPosition+controlX, 
+				225 - 5.0 * stepOctave + 90 * rowIndex+controlY, 
 				135 + distanceBetweenNotes * horizontalPosition+10, 
-				221 - 5.0 * stepOctave + 90 * rowIndex);
-		line1.setStroke(Color.RED);
-
-		group.getChildren().add(line1);
+				225 - 5.0 * stepOctave + 90 * rowIndex+durationLength);
+		quadcurve1.setStroke(Color.CRIMSON);
+		quadcurve1.setFill(Color.TRANSPARENT);
+	
+		group.getChildren().add(quadcurve1);
 
 		
 	}
 	public void drawMeasures(int horizontalPosition,int rowIndex, int measureNumber) {
+		int adjustment=5;
+		int distanceBetweenClelfMeasure=3;
+		int distanceBetweenClelfs=2;
+		int moveBitToLeft=4;
 		Line line = new Line(
-				120+distanceBetweenNotes * horizontalPosition,
+				120+distanceBetweenNotes * horizontalPosition-moveBitToLeft,
 				210+90*rowIndex,
-				120+distanceBetweenNotes * horizontalPosition,
+				120+distanceBetweenNotes * horizontalPosition-moveBitToLeft,
 				250+90*rowIndex);
 		line.setStrokeWidth(3);
 		String measureNumberStr = String.valueOf(measureNumber);
 		//draw measure number
-		Text measureNumberText = new Text(120+distanceBetweenNotes * horizontalPosition, 250+90*rowIndex+measureBelowStaff, measureNumberStr);
-		measureNumberText.setFont(Font.font("Verdana", 20));
+		Text measureNumberText = new Text(120+distanceBetweenNotes * horizontalPosition-adjustment-moveBitToLeft, 250+90*rowIndex+measureBelowStaff+adjustment, measureNumberStr);
+		measureNumberText.setFont(Font.font("Verdana", 16));
 		measureNumberText.setFill(Color.CRIMSON);
+		
+		//draw clef
+		Line clef1 = new Line(
+				120+distanceBetweenNotes * horizontalPosition+distanceBetweenClelfMeasure-moveBitToLeft,
+				220+90*rowIndex,
+				120+distanceBetweenNotes * horizontalPosition+distanceBetweenClelfMeasure-moveBitToLeft,
+				240+90*rowIndex);
+		clef1.setStroke(Color.GRAY);
+
+		Line clef2 = new Line(
+				120+distanceBetweenNotes * horizontalPosition+distanceBetweenClelfMeasure+distanceBetweenClelfs-moveBitToLeft,
+				220+90*rowIndex,
+				120+distanceBetweenNotes * horizontalPosition+distanceBetweenClelfMeasure+distanceBetweenClelfs-moveBitToLeft,
+				240+90*rowIndex);
+		clef2.setStroke(Color.GRAY);
+	
+		//check if clef should be drawn
+		if(measureNumber%2==1) {
+			group.getChildren().add(clef1);
+			group.getChildren().add(clef2);
+
+		}
+		
+		
 		group.getChildren().add(line);
 		group.getChildren().add(measureNumberText);
 	}
-	
+
 	public void drawEverything(HashMap <Integer, List<Note>>drumNotesMap,HashMap<Integer,Integer>measuresList,MainViewController mvc ) throws TXMLException {
 		//Loop through drum notes hashmap
 		
 		Score score1 = mvc.converter.getScore();
 		List<Part> partList = score1.getModel().getParts();	
 		//measure is drawn only when measureNumber increases
-		int measureNum=0;
-		//System.out.println("score counts: "+score1.getModel().getScoreCount());		
+		int measureNum=0;	
 		String clef = partList.get(0).getMeasures().get(0).getAttributes().clef.sign;
 
-		Line clef1 = new Line(105, 220, 105, 240);
-		Line clef2 = new Line(110, 220, 110, 240);
-		clef1.setStrokeWidth(4);
-		clef2.setStrokeWidth(4);
-		group.getChildren().add(clef1);
-		group.getChildren().add(clef2);
 		//draw measures
 		
 		System.out.println(measuresList);
@@ -191,6 +248,7 @@ public class DrawDrumNotes {
 		//draw notes
 		for(HashMap.Entry<Integer,List<Note>> entry: drumNotesMap.entrySet()) {
 			int keyValue=entry.getKey();
+			int duration=0;
 			System.out.printf("hashmap key: %d",keyValue);
 			//20 notes each row
 			int dividend = keyValue, divisor = 20;
@@ -211,7 +269,7 @@ public class DrawDrumNotes {
 		
 			
 			if (entry.getValue().get(0).getDuration()==null) {}
-			else {int duration=entry.getValue().get(0).getDuration();
+			else { duration=entry.getValue().get(0).getDuration();
 	
 			if(duration==4) {  drawDuration4( horizontalPosition, stepOctave, rowIndex);}else if(duration==8) {
 				drawDuration8( horizontalPosition, stepOctave, rowIndex);
@@ -236,7 +294,12 @@ public class DrawDrumNotes {
 				System.out.printf("hashmap %s is %d",stepWithOctave,stepOctave);
 				String type = note.getType();
 				  if(note.getNotehead()==null) { 
-					  drawNote(horizontalPosition,stepOctave,rowIndex);
+					  if(type=="half") {
+						  drawHalfNote(horizontalPosition,stepOctave,rowIndex);
+					  }else {
+						  drawSolidNote(horizontalPosition,stepOctave,rowIndex);
+					  }
+					
 					  } 
 				  else {
 					  drawNoteHead(horizontalPosition,stepOctave,rowIndex); }
