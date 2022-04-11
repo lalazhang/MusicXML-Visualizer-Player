@@ -44,8 +44,39 @@ public class DrawGuitarNotes {
 			return true;
 		}
 	}
+	private void drawGrace(int horizontalPosition, int stringPosition, int rowIndex, int fret) {
+		// TODO Auto-generated method stub
+		// distance between 2 notes here is 37
+				Text fretText = new Text(152 + 33.0 * horizontalPosition, (326 + stringPosition * 13.0) + 150 * rowIndex,
+						Integer.toString(fret));
+				fretText.toFront();
+				fretText.setFont(Font.font(9));
+//				For fret background
+				Blend blend = new Blend();
+				Blend blend2 = new Blend();
+
+				ColorInput topInput = new ColorInput((154 + 33.0 * horizontalPosition) - 3,
+						((326 + stringPosition * 13.0) + 150 * rowIndex) - 10, 10, 12, Color.WHITE);
+				ColorInput topInput2 = new ColorInput((155 + 33.0 * horizontalPosition) - 3,
+						((326 + stringPosition * 13.0) + 150 * rowIndex) - 10, 14, 12, Color.WHITE);
+				blend.setTopInput(topInput);
+				blend2.setTopInput(topInput2);
+				blend.setMode(BlendMode.OVERLAY);
+				blend2.setMode(BlendMode.OVERLAY);
+
+//				Check if fret is double digit and set effect
+				if (fret < 10) {
+					fretText.setEffect(blend);
+
+				} else {
+					fretText.setEffect(blend2);
+
+				}
+				group.getChildren().add(fretText);
+	}
+
 	private void topSlur(int horizontalPosition, int stringPosition, int rowIndex, int fret) {
-		Arc arc = new Arc((171 + 33.0 * horizontalPosition), (328 + stringPosition * 13.0) + 150 * rowIndex, 16.0, 18.0,
+		Arc arc = new Arc((172 + 33.0 * horizontalPosition), (328 + stringPosition * 13.0) + 150 * rowIndex, 16.0, 18.0,
 				17.0, 160.0);
 		arc.setFill(Color.TRANSPARENT);
 		arc.setStroke(Color.BLACK);
@@ -67,7 +98,7 @@ public class DrawGuitarNotes {
 		}
 	}
 	private void bottomSlur(int horizontalPosition, int stringPosition, int rowIndex, int fret) {
-		Arc arc = new Arc((171 + 33.0 * horizontalPosition), (320 + stringPosition * 13.0) + 150 * rowIndex, 16.0, 18.0,
+		Arc arc = new Arc((172 + 33.0 * horizontalPosition), (320 + stringPosition * 13.0) + 150 * rowIndex, 16.0, 18.0,
 				189.0, 160.0);
 		arc.setFill(Color.TRANSPARENT);
 		arc.setStroke(Color.BLACK);
@@ -217,8 +248,16 @@ public class DrawGuitarNotes {
 				drawSlur(horizontalPosition, stringPosition, rowIndex, fret, entry.getValue().get(0));
 
 			}
-//			Draw Notes
-			drawNote(horizontalPosition, stringPosition, rowIndex, fret);
+			if(entry.getValue().get(0).getGrace()!=null) {
+//				draw grace notes
+				drawGrace(horizontalPosition, stringPosition, rowIndex, fret);
+				System.out.println("Grace note:"+fret);
+			}
+			else{
+//				Draw Notes
+				drawNote(horizontalPosition, stringPosition, rowIndex, fret);
+			}
+
 //			Get chords if any
 			List<Note> notesIncludeChord = entry.getValue();
 			notesIncludeChord.remove(0);
@@ -230,13 +269,23 @@ public class DrawGuitarNotes {
 				horizontalPosition = keyValue % 22;
 				fret = note.getNotations().getTechnical().getFret();
 				stringPosition = note.getNotations().getTechnical().getString();
-				drawNote(horizontalPosition, stringPosition, rowIndex, fret);
+				if(note.getGrace()!=null) {
+//					draw grace notes
+					drawGrace(horizontalPosition, stringPosition, rowIndex, fret);
+					System.out.println("Grace note:"+fret);
+				}
+				else{
+//					Draw Notes
+					drawNote(horizontalPosition, stringPosition, rowIndex, fret);
+				}
+//				drawNote(horizontalPosition, stringPosition, rowIndex, fret);
 
 			}
 
 		}
 
 	}
+
 
 	public Group getDrawing() {
 		return this.group;
