@@ -66,15 +66,11 @@ public class DrumNotesList {
     public void createMeasuresList(MainViewController mvc) {
     	
     	Score score = mvc.converter.getScore();
-<<<<<<< HEAD
-    	 List<TabMeasure> measureList = score.getMeasureList();
-    	int measureListSize= measureList.size();
-    	System.out.println("measure list size is  \n "+ measureListSize);
-=======
+
     	List<TabMeasure> measureList = score.getMeasureList();
     	int measureListSize= measureList.size();
 //    	System.out.println("measure list size is  \n "+ measureListSize);
->>>>>>> origin/develop
+
     }
     
     
@@ -96,11 +92,7 @@ public class DrumNotesList {
 			
 			
 			 List<TabMeasure> measureList = score1.getMeasureList();
-<<<<<<< HEAD
-			 System.out.println("measure list size is  \n "+ measureList.size());
-=======
-//			 System.out.println("measure list size is  \n "+ measureList.size());
->>>>>>> origin/develop
+
 
 			 int noteSize=0;
 
@@ -136,11 +128,7 @@ public class DrumNotesList {
 
 							Note drumNote= measureList.get(i).getSortedNoteList().get(j).getModel();
 
-<<<<<<< HEAD
-							System.out.printf("measure is %d \n", measureList.get(i).getModel().getNumber());
-=======
-//							System.out.printf("measure is %d \n", measureList.get(i).getModel().getNumber());
->>>>>>> origin/develop
+
 							
 							int measure = measureList.get(i).getModel().getNumber();
 							
@@ -165,17 +153,12 @@ public class DrumNotesList {
 								//add this note to hashmap List<Note>
 								chordDrumNotes.add(drumNote);
 								//add key and drumnotes list to hashmap
-<<<<<<< HEAD
-								drumNotesList.put(drumNotesListIdx,chordDrumNotes );
-								//drum notes index +1 only when it's not chord note
-								this.measures.put(drumNotesListIdx,measure);
-								
-=======
+
 								drumNotesList.put(drumNotesListIdx,chordDrumNotes);
 								//drum notes index +1 only when it's not chord note
 								this.measures.put(drumNotesListIdx,measure);
 							
->>>>>>> origin/develop
+
 								drumNotesListIdx++;
 								
 								}
