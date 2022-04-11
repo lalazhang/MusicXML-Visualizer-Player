@@ -26,8 +26,10 @@ public class DrawDrumNotes {
 	private Group group = new Group();
 	//private HashMap<Integer,Integer> measuresList = new HashMap<Integer,Integer>();
 	//public DrumNotesList drumNotesList= new DrumNotesList();
+
 	private double distanceBetweenNotes=40.0;
 	private double measureBelowStaff=10.0;
+
 	public DrawDrumNotes() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -75,12 +77,14 @@ public class DrawDrumNotes {
 	 */
 	
 
+
 	public void drawSolidNote(int horizontalPosition, int stepOctave, int rowIndex) {
 		//distance between 2 notes is 25
 		int noteRadius=4;
 		Line noteLine = new Line(135 + distanceBetweenNotes * horizontalPosition, 
 				225 - 5.0 * stepOctave + 90 * rowIndex,
 				135 + distanceBetweenNotes * horizontalPosition, 
+
 				250 - 5.0 * stepOctave + 90 * rowIndex);
 		Circle note = new Circle(130 + distanceBetweenNotes * horizontalPosition,
 				250.0 - 5.0 * stepOctave + 90 * rowIndex, 5);
@@ -176,6 +180,7 @@ public class DrawDrumNotes {
 		
 	}
 	public void drawMeasures(int horizontalPosition,int rowIndex, int measureNumber) {
+
 		int adjustment=5;
 		int distanceBetweenClelfMeasure=3;
 		int distanceBetweenClelfs=2;
@@ -184,10 +189,12 @@ public class DrawDrumNotes {
 				120+distanceBetweenNotes * horizontalPosition-moveBitToLeft,
 				210+90*rowIndex,
 				120+distanceBetweenNotes * horizontalPosition-moveBitToLeft,
+
 				250+90*rowIndex);
 		line.setStrokeWidth(3);
 		String measureNumberStr = String.valueOf(measureNumber);
 		//draw measure number
+
 		Text measureNumberText = new Text(120+distanceBetweenNotes * horizontalPosition-adjustment-moveBitToLeft, 250+90*rowIndex+measureBelowStaff+adjustment, measureNumberStr);
 		measureNumberText.setFont(Font.font("Verdana", 16));
 		measureNumberText.setFill(Color.CRIMSON);
@@ -219,12 +226,14 @@ public class DrawDrumNotes {
 		group.getChildren().add(measureNumberText);
 	}
 
+
 	public void drawEverything(HashMap <Integer, List<Note>>drumNotesMap,HashMap<Integer,Integer>measuresList,MainViewController mvc ) throws TXMLException {
 		//Loop through drum notes hashmap
 		
 		Score score1 = mvc.converter.getScore();
 		List<Part> partList = score1.getModel().getParts();	
 		//measure is drawn only when measureNumber increases
+
 		int measureNum=0;	
 		String clef = partList.get(0).getMeasures().get(0).getAttributes().clef.sign;
 
@@ -234,6 +243,7 @@ public class DrawDrumNotes {
 		for (HashMap.Entry<Integer,Integer> entry: measuresList.entrySet()) {
 			int keyValue=entry.getKey();
 			System.out.printf("measure key: %d",keyValue);
+
 			//20 notes each row
 			int dividend = keyValue, divisor = 20;
 			int rowIndex = dividend / divisor;
@@ -245,19 +255,32 @@ public class DrawDrumNotes {
 			}
 			
 		}
+
 		//draw notes
 		for(HashMap.Entry<Integer,List<Note>> entry: drumNotesMap.entrySet()) {
 			int keyValue=entry.getKey();
 			int duration=0;
 			System.out.printf("hashmap key: %d",keyValue);
+			
 			//20 notes each row
 			int dividend = keyValue, divisor = 20;
 			int rowIndex = dividend / divisor;
 			int horizontalPosition = keyValue % 20;
+			//20 notes each row
+//			int dividend = keyValue, divisor = 20;
+//			System.out.println("Kayvalue: "+keyValue);
+
+			System.out.println("\ndividend: "+dividend);
+//			int rowIndex = dividend / divisor;		
+			System.out.println("rowIndex: "+rowIndex);
+//			int horizontalPosition = keyValue % 20;
+			System.out.println("horizontalPosition: "+horizontalPosition);
 			DrumStaff drumStaff = new DrumStaff();
+
 			
 			drumStaff.draw(group, rowIndex);
 			
+
 			//get display-step
 			String step =entry.getValue().get(0).getUnpitched().getDisplayStep();
 			//get display-octave
@@ -266,7 +289,6 @@ public class DrawDrumNotes {
 			//combine step and octave to use noteToNumber to get position on staff
 			String stepWithOctave = step+octave;
 			int stepOctave = noteToNumber(stepWithOctave);
-		
 			
 			if (entry.getValue().get(0).getDuration()==null) {}
 			else { duration=entry.getValue().get(0).getDuration();
@@ -274,7 +296,10 @@ public class DrawDrumNotes {
 			if(duration==4) {  drawDuration4( horizontalPosition, stepOctave, rowIndex);}else if(duration==8) {
 				drawDuration8( horizontalPosition, stepOctave, rowIndex);
 			}}
-				
+			System.out.println("Step with Octave: "+stepWithOctave);
+
+			System.out.println("StepOctave: "+stepOctave);
+
 			List<Note> notesIncludeChord = entry.getValue();
 			for (Note note: notesIncludeChord) {
 				/*
@@ -286,12 +311,16 @@ public class DrawDrumNotes {
 				//get display-step
 				step =note.getUnpitched().getDisplayStep();
 				//get display-octave
-			 octaveInt = note.getUnpitched().getDisplayOctave();
-				 octave = String.valueOf(octaveInt);
+				octaveInt = note.getUnpitched().getDisplayOctave();
+				octave = String.valueOf(octaveInt);
 				//combine step and octave to use noteToNumber to get position on staff
 				stepWithOctave = step+octave;
 				stepOctave = noteToNumber(stepWithOctave);
-				System.out.printf("hashmap %s is %d",stepWithOctave,stepOctave);
+//				System.out.printf("hashmap %s is %d",stepWithOctave,stepOctave);
+				System.out.println("Step with Octave: "+stepWithOctave);
+
+				System.out.println("StepOctave: "+stepOctave);
+
 				String type = note.getType();
 				  if(note.getNotehead()==null) { 
 					  if(type=="half") {
@@ -314,7 +343,7 @@ public class DrawDrumNotes {
 
 	public int noteToNumber (String noteWithOctive) {
     	// noteNumber indicates the location of the note on staff
-    	System.out.print(noteWithOctive);
+//    	System.out.print(noteWithOctive);
 
     	int noteNumber=0;
     	//noteNumber set as 0 means E4 so it sits on the bottom line of 5 staff lines
