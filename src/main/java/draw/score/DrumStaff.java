@@ -17,7 +17,7 @@ public class DrumStaff {
 			staffLine = new Line(
 					100.0,
 					90.0*rowNumber+250.0-10.0*i,
-					900.0,
+					1050.0,
 					90.0*rowNumber+250.0-10.0*i);
 
 			box.getChildren().add(staffLine);
