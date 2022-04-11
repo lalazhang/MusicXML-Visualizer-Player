@@ -31,6 +31,13 @@
     -fx-padding: 1px;
     -fx-background-color: black;
 }
+.scrollPane > .viewport {
+   -fx-background: transparent;
+}
+#scrollPane {
+   -fx-background: #FFFFFF;
+   -fx-border-color: #FFFFFF;
+}
 
 #borderPane, #menuBar, #convertPane, #settingsPane, #timeSignaturePane, #tabPlayerPane {
     -fx-background-color: rgb(50,50,50);
