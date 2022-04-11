@@ -160,11 +160,9 @@ public class PrevSheetController extends Application {
 				if (mp.getManagedPlayer()!=null && !mp.getManagedPlayer().isFinished()) {
 
 					try {
-
+						mp.setTempo(temp);
 						labelTimeCur.setText(mp.getCurTime());
 						labelTimeEnd.setText(mp.getDuration());
-						mp.setTempo(temp);
-
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -251,7 +249,7 @@ public class PrevSheetController extends Application {
 		playing =false;
 		mp = new XmlPlayer(mvc, xmlstr);
 		labelTimeCur.setText("00:00");
-
+		labelTimeEnd.setText(mp.getDuration());
 	}
 
 

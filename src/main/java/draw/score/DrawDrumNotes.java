@@ -21,6 +21,7 @@ import javafx.scene.text.Text;
 import models.Part;
 
 import models.measure.note.Note;
+import utility.Settings;
 
 public class DrawDrumNotes {
 	private Group group = new Group();
@@ -187,16 +188,16 @@ public class DrawDrumNotes {
 		int distanceBetweenClelfs=2;
 		int moveBitToLeft=4;
 		Line line = new Line(
-				120+distanceBetweenNotes * horizontalPosition-moveBitToLeft,
+				160+distanceBetweenNotes * horizontalPosition-moveBitToLeft,
 				210+90*rowIndex,
-				120+distanceBetweenNotes * horizontalPosition-moveBitToLeft,
+				160+distanceBetweenNotes * horizontalPosition-moveBitToLeft,
 
 				250+90*rowIndex);
 		line.setStrokeWidth(3);
 		String measureNumberStr = String.valueOf(measureNumber);
 		//draw measure number
 
-		Text measureNumberText = new Text(120+distanceBetweenNotes * horizontalPosition-adjustment-moveBitToLeft, 250+90*rowIndex+measureBelowStaff+adjustment, measureNumberStr);
+		Text measureNumberText = new Text(160+distanceBetweenNotes * horizontalPosition-adjustment-moveBitToLeft, 250+90*rowIndex+measureBelowStaff+adjustment, measureNumberStr);
 		measureNumberText.setFont(Font.font("Verdana", 16));
 		measureNumberText.setFill(Color.CRIMSON);
 		
@@ -266,19 +267,28 @@ public class DrawDrumNotes {
 			int duration=0;
 			System.out.printf("hashmap key: %d",keyValue);
 			
+			int nume = Settings.getInstance().tsNum;
+			int denom = Settings.getInstance().tsDen;
+			Text timeSigNume = new Text(125, 230, ""+nume);
+			timeSigNume.setFont(Font.font("Verdana", 30));
+			Text timeSigDenom = new Text(125, 250, ""+denom);
+			timeSigDenom.setFont(Font.font("Verdana", 30));
+			group.getChildren().add(timeSigNume);
+			group.getChildren().add(timeSigDenom);
+			
 			//20 notes each row
 			int dividend = keyValue, divisor = 20;
 			int rowIndex = dividend / divisor;
-			int horizontalPosition = keyValue % 20;
+			int horizontalPosition = keyValue % 20 + 1;
 			//20 notes each row
 //			int dividend = keyValue, divisor = 20;
 //			System.out.println("Kayvalue: "+keyValue);
 
-			System.out.println("\ndividend: "+dividend);
+//			System.out.println("\ndividend: "+dividend);
 //			int rowIndex = dividend / divisor;		
-			System.out.println("rowIndex: "+rowIndex);
+//			System.out.println("rowIndex: "+rowIndex);
 //			int horizontalPosition = keyValue % 20;
-			System.out.println("horizontalPosition: "+horizontalPosition);
+//			System.out.println("horizontalPosition: "+horizontalPosition);
 			DrumStaff drumStaff = new DrumStaff();
 
 	
@@ -301,9 +311,9 @@ public class DrawDrumNotes {
 			if(duration==4) {  drawDuration4( horizontalPosition, stepOctave, rowIndex);}else if(duration==8) {
 				drawDuration8( horizontalPosition, stepOctave, rowIndex);
 			}}
-			System.out.println("Step with Octave: "+stepWithOctave);
+//			System.out.println("Step with Octave: "+stepWithOctave);
 
-			System.out.println("StepOctave: "+stepOctave);
+//			System.out.println("StepOctave: "+stepOctave);
 
 			List<Note> notesIncludeChord = entry.getValue();
 			for (Note note: notesIncludeChord) {
@@ -322,9 +332,9 @@ public class DrawDrumNotes {
 				stepWithOctave = step+octave;
 				stepOctave = noteToNumber(stepWithOctave);
 //				System.out.printf("hashmap %s is %d",stepWithOctave,stepOctave);
-				System.out.println("Step with Octave: "+stepWithOctave);
+//				System.out.println("Step with Octave: "+stepWithOctave);
 
-				System.out.println("StepOctave: "+stepOctave);
+//				System.out.println("StepOctave: "+stepOctave);
 
 				String type = note.getType();
 				  if(note.getNotehead()==null) { 

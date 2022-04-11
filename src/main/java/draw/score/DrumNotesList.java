@@ -70,7 +70,7 @@ public class DrumNotesList {
 
     	 List<TabMeasure> measureList = score.getMeasureList();
     	int measureListSize= measureList.size();
-    	System.out.println("measure list size is  \n "+ measureListSize);
+//    	System.out.println("measure list size is  \n "+ measureListSize);
 
 
     }
@@ -201,7 +201,7 @@ public class DrumNotesList {
 //				}
 //				
 //			}
-			System.out.println("note size: "+ noteSize);
+//			System.out.println("note size: "+ noteSize);
 			int printStr11 = score1.getMeasureList().size();
 			
 			List<Part> partList = score1.getModel().getParts();
