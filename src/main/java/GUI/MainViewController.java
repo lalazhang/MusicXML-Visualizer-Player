@@ -374,19 +374,7 @@ public class MainViewController extends Application {
 			}
 
   
-		Parent root;
-		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GUI/tabPlayer.fxml"));
-			root = loader.load();
-			PlayMusicController controller = loader.getController();
-
-			controller.setMainViewController(this, converter.getMusicXML());
-
-			convertWindow = this.openNewWindow(root, "Music Player");
-		} catch (IOException e) {
-			Logger logger = Logger.getLogger(getClass().getName());
-			logger.log(Level.SEVERE, "Failed to create new Window.", e);
-		}
+		
 
 	}
 
