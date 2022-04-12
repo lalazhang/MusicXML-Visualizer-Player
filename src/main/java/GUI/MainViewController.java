@@ -335,6 +335,7 @@ public class MainViewController extends Application {
 
 
 
+
 	private void previewButtonHandle() throws Exception {
 
 
@@ -352,6 +353,7 @@ public class MainViewController extends Application {
 
 		Parent root;
 
+
 		
 			Stage stage = new Stage();
 
@@ -364,8 +366,6 @@ public class MainViewController extends Application {
 			Scene scene = root.getScene();
 			stage.setScene(scene);
 
-			
-
 			try {
 				convertWindow = this.openNewWindow(root, "Music Sheet");
 			} catch (Exception e) {
@@ -373,6 +373,20 @@ public class MainViewController extends Application {
 				e.printStackTrace();
 			}
 
+  
+		Parent root;
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GUI/tabPlayer.fxml"));
+			root = loader.load();
+			PlayMusicController controller = loader.getController();
+
+			controller.setMainViewController(this, converter.getMusicXML());
+
+			convertWindow = this.openNewWindow(root, "Music Player");
+		} catch (IOException e) {
+			Logger logger = Logger.getLogger(getClass().getName());
+			logger.log(Level.SEVERE, "Failed to create new Window.", e);
+		}
 
 	}
 
@@ -456,13 +470,18 @@ public class MainViewController extends Application {
 					previewButton.setDisable(true);
 					showMXLButton.setDisable(true);
 					// saveTabButton.setDisable(true);
+
 //					playButton.setDisable(true);
+
 				} else {
 					saveMXLButton.setDisable(false);
 					previewButton.setDisable(false);
 					showMXLButton.setDisable(false);
 					// saveTabButton.setDisable(false);
+
 //					playButton.setDisable(false);
+
+
 				}
 				return highlighter.computeHighlighting(text);
 			}

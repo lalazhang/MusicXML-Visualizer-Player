@@ -15,6 +15,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
+
 <BorderPane fx:id="borderPaneCode" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="450.0" minWidth="640.0" prefHeight="700.0" prefWidth="1000.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.PrevSheetController">
    <center>
       <AnchorPane fx:id="borderPane" prefHeight="700.0" prefWidth="1000.0" BorderPane.alignment="CENTER">
@@ -75,4 +76,5 @@
          </children>
       </AnchorPane>
    </center>
+
 </BorderPane>
