@@ -31,6 +31,7 @@ public class DrawDrumNotes {
 	private double distanceBetweenNotes=40.0;
 	private double measureBelowStaff=10.0;
 
+
 	public DrawDrumNotes() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -95,6 +96,21 @@ public class DrawDrumNotes {
 		
 	}
 	
+	public void drawSolidGraceNote(int horizontalPosition, int stepOctave, int rowIndex) {
+		//distance between 2 notes is 25
+		int moveToRight=2;
+		Line noteLine = new Line(135 + distanceBetweenNotes * horizontalPosition, 
+				225- 5.0 * stepOctave + 90 * rowIndex,
+				135 + distanceBetweenNotes * horizontalPosition, 
+				250 - 5.0 * stepOctave + 90 * rowIndex);
+		Circle note = new Circle(130 + distanceBetweenNotes * horizontalPosition+moveToRight,
+				250.0 - 5.0 * stepOctave + 90 * rowIndex, 3);
+		note.setFill(Color.MIDNIGHTBLUE);
+		group.getChildren().add(noteLine);
+		group.getChildren().add(note);
+		
+	}
+	
 	public void drawHalfNote(int horizontalPosition, int stepOctave, int rowIndex) {
 		int noteRadius=4;
 		Line noteLine = new Line(135 + distanceBetweenNotes * horizontalPosition, 
@@ -109,6 +125,19 @@ public class DrawDrumNotes {
 		group.getChildren().add(note);
 		group.getChildren().add(noteLine);
 	}
+	
+	public void drawWholeNote(int horizontalPosition, int stepOctave, int rowIndex) {
+		int noteRadius=4;
+
+		Circle note = new Circle(130 + distanceBetweenNotes * horizontalPosition,
+				250.0 - 5.0 * stepOctave + 90 * rowIndex, 5);
+		note.setFill(Color.ANTIQUEWHITE);
+		note.setStroke(Color.MIDNIGHTBLUE);
+		note.setStrokeWidth(3);
+		group.getChildren().add(note);
+	
+	}
+	
 	
 	
 	public void drawNoteHead(int horizontalPosition, int stepOctave, int rowIndex) {
@@ -180,12 +209,32 @@ public class DrawDrumNotes {
 
 		
 	}
+	
+	public void drawSlur(int horizontalPosition, int stepOctave, int rowIndex) {
+		int durationLength=18;
+		int controlX=10;
+		int controlY=8;
+	
+		QuadCurve quadcurve1 = new QuadCurve(
+				135 + distanceBetweenNotes * horizontalPosition, 
+				270 - 5.0 * stepOctave + 90 * rowIndex, 
+				135 + distanceBetweenNotes * horizontalPosition+controlX, 
+				270 - 5.0 * stepOctave + 90 * rowIndex+controlY, 
+				160 + distanceBetweenNotes * horizontalPosition+10, 
+				270 - 5.0 * stepOctave + 90 * rowIndex);
+		quadcurve1.setStroke(Color.CRIMSON);
+		quadcurve1.setFill(Color.TRANSPARENT);
+	
+		group.getChildren().add(quadcurve1);
+
+		
+	}
 	public void drawMeasures(int horizontalPosition,int rowIndex, int measureNumber) {
 
 		int adjustment=5;
 		int distanceBetweenClelfMeasure=3;
 		int distanceBetweenClelfs=2;
-		int moveBitToLeft=4;
+		int moveBitToLeft=7;
 		Line line = new Line(
 				160+distanceBetweenNotes * horizontalPosition-moveBitToLeft,
 				210+90*rowIndex,
@@ -202,16 +251,16 @@ public class DrawDrumNotes {
 		
 		//draw clef
 		Line clef1 = new Line(
-				120+distanceBetweenNotes * horizontalPosition+distanceBetweenClelfMeasure-moveBitToLeft,
+				160+distanceBetweenNotes * horizontalPosition+distanceBetweenClelfMeasure-moveBitToLeft,
 				220+90*rowIndex,
-				120+distanceBetweenNotes * horizontalPosition+distanceBetweenClelfMeasure-moveBitToLeft,
+				160+distanceBetweenNotes * horizontalPosition+distanceBetweenClelfMeasure-moveBitToLeft,
 				240+90*rowIndex);
-		clef1.setStroke(Color.GRAY);
+		clef1.setStroke(Color.BLUE);
 
 		Line clef2 = new Line(
-				120+distanceBetweenNotes * horizontalPosition+distanceBetweenClelfMeasure+distanceBetweenClelfs-moveBitToLeft,
+				160+distanceBetweenNotes * horizontalPosition+distanceBetweenClelfMeasure+distanceBetweenClelfs-moveBitToLeft,
 				220+90*rowIndex,
-				120+distanceBetweenNotes * horizontalPosition+distanceBetweenClelfMeasure+distanceBetweenClelfs-moveBitToLeft,
+				160+distanceBetweenNotes * horizontalPosition+distanceBetweenClelfMeasure+distanceBetweenClelfs-moveBitToLeft,
 				240+90*rowIndex);
 		clef2.setStroke(Color.GRAY);
 	
@@ -238,10 +287,23 @@ public class DrawDrumNotes {
 		int measureNum=0;	
 		String clef = partList.get(0).getMeasures().get(0).getAttributes().clef.sign;
 
-		//draw measures
+	
+
+		//time signature
+		int nume = Settings.getInstance().tsNum;
+		int denom = Settings.getInstance().tsDen;
+		Text timeSigNume = new Text(125, 230, ""+nume);
+		timeSigNume.setFont(Font.font("Verdana", 20));
+		Text timeSigDenom = new Text(125, 250, ""+denom);
+		timeSigDenom.setFont(Font.font("Verdana", 20));
+		group.getChildren().add(timeSigNume);
+		group.getChildren().add(timeSigDenom);
 		
 		System.out.println(measuresList);
+		
+		//draw measures
 		for (HashMap.Entry<Integer,Integer> entry: measuresList.entrySet()) {
+
 			int keyValue=entry.getKey();
 			System.out.printf("measure key: %d",keyValue);
 
@@ -263,15 +325,7 @@ public class DrawDrumNotes {
 			int duration=0;
 			System.out.printf("hashmap key: %d",keyValue);
 			
-			int nume = Settings.getInstance().tsNum;
-			int denom = Settings.getInstance().tsDen;
-			Text timeSigNume = new Text(125, 230, ""+nume);
-			timeSigNume.setFont(Font.font("Verdana", 30));
-			Text timeSigDenom = new Text(125, 250, ""+denom);
-			timeSigDenom.setFont(Font.font("Verdana", 30));
-			group.getChildren().add(timeSigNume);
-			group.getChildren().add(timeSigDenom);
-			
+
 			//20 notes each row
 			int dividend = keyValue, divisor = 20;
 			int rowIndex = dividend / divisor;
@@ -287,9 +341,10 @@ public class DrawDrumNotes {
 //			System.out.println("horizontalPosition: "+horizontalPosition);
 			DrumStaff drumStaff = new DrumStaff();
 
-			
+	
 			drumStaff.draw(group, rowIndex);
 			
+
 
 			//get display-step
 			String step =entry.getValue().get(0).getUnpitched().getDisplayStep();
@@ -303,13 +358,24 @@ public class DrawDrumNotes {
 			if (entry.getValue().get(0).getDuration()==null) {}
 			else { duration=entry.getValue().get(0).getDuration();
 	
-			if(duration==4) {  drawDuration4( horizontalPosition, stepOctave, rowIndex);}else if(duration==8) {
+			if(duration==4 ||entry.getValue().get(0).getType()=="16th" ) 
+			{  drawDuration4( horizontalPosition, stepOctave, rowIndex);}
+			else if(duration==8||entry.getValue().get(0).getType()=="eighth") {
 				drawDuration8( horizontalPosition, stepOctave, rowIndex);
 			}}
-//			System.out.println("Step with Octave: "+stepWithOctave);
-
-//			System.out.println("StepOctave: "+stepOctave);
-
+			//draw slur
+			if(entry.getValue().get(0).getNotations()==null) {
+				
+			}
+			else if(entry.getValue().get(0).getNotations().getSlurs()==null){
+				
+			}
+			else {
+				if(entry.getValue().get(0).getNotations().getSlurs().get(0).getType()=="start") {
+					drawSlur( horizontalPosition, stepOctave, rowIndex);
+				}
+				
+			}
 			List<Note> notesIncludeChord = entry.getValue();
 			for (Note note: notesIncludeChord) {
 				/*
@@ -335,8 +401,19 @@ public class DrawDrumNotes {
 				  if(note.getNotehead()==null) { 
 					  if(type=="half") {
 						  drawHalfNote(horizontalPosition,stepOctave,rowIndex);
-					  }else {
-						  drawSolidNote(horizontalPosition,stepOctave,rowIndex);
+					  }
+					  else if(type=="whole") {
+						  drawWholeNote(horizontalPosition,stepOctave,rowIndex);
+
+					  }
+					  
+					  else {
+						  if(note.getGrace()==null) {
+							  drawSolidNote(horizontalPosition,stepOctave,rowIndex);
+						  }
+						  else {
+							  drawSolidGraceNote(horizontalPosition,stepOctave,rowIndex);
+						  }
 					  }
 					
 					  } 
