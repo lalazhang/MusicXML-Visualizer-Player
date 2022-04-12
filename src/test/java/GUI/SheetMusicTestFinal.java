@@ -7,7 +7,6 @@ import org.testfx.framework.junit5.ApplicationExtension;
 import converter.InstrumentSetting;
 import custom_exceptions.TXMLException;
 import draw.score.DrumNotesList;
-
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -35,12 +34,10 @@ import org.junit.jupiter.api.Test;
 
 import converter.Converter;
 
-
-@Disabled
-
 @ExtendWith(ApplicationExtension.class)
-public class SheetMusicTest extends ApplicationTest{
-    @Override
+public class SheetMusicTestFinal extends ApplicationTest {
+	
+	@Override
     public void start(Stage stage) throws IOException {
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("GUI/mainView.fxml"));
         Scene scene = new Scene(root);
@@ -54,9 +51,8 @@ public class SheetMusicTest extends ApplicationTest{
         stage.setScene(scene);
         stage.show();
     }
-
-
-    @Test
+	
+	@Test
     public void testNoInput(FxRobot robot) {
     	//Make sure the button is disabled on launch without any input
         robot.clickOn("#previewButton");
@@ -73,7 +69,6 @@ public class SheetMusicTest extends ApplicationTest{
         FxAssert.verifyThat("#previewButton", NodeMatchers.isDisabled());
     }
     
-
     @Test
     public void testWithValidInput(FxRobot robot) {
     	//Make sure the button is enabled when there is valid text present
@@ -88,23 +83,17 @@ public class SheetMusicTest extends ApplicationTest{
         FxAssert.verifyThat("#previewButton", NodeMatchers.isEnabled());
     }
     
-
-    
     @Test
     public void testNoteToNumber() {
     	//Tests sample input to make sure correct notes are being determined
     	PrevSheetController controller = new PrevSheetController();
-
     	DrumNotesList drumNotesList =new DrumNotesList();
     	String note = "C4";
     	int noteNum = drumNotesList.noteToNumber(note);
     	assertEquals(-2,noteNum);
     	note = "D5";
     	noteNum = drumNotesList.noteToNumber(note);
-
-    	assertEquals(6,noteNum);
-    	
-    	
+    	assertEquals(6,noteNum);    	
     }
-    
+	
 }

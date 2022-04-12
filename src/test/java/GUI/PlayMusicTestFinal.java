@@ -41,11 +41,8 @@ import org.junit.jupiter.api.Test;
 
 import converter.Converter;
 
-
-@Disabled
-
 @ExtendWith(ApplicationExtension.class)
-public class PlayMusicTest extends ApplicationTest {
+public class PlayMusicTestFinal extends ApplicationTest {
 
 	public Converter converter;
 	private Robot bot;
@@ -76,8 +73,8 @@ public class PlayMusicTest extends ApplicationTest {
     @Test
     public void testNoInput(FxRobot robot) {
     	//Make sure the button is disabled on launch without any input
-        robot.clickOn("#playButton");
-        FxAssert.verifyThat("#playButton", NodeMatchers.isDisabled());
+        robot.clickOn("#previewButton");
+        FxAssert.verifyThat("#previewButton", NodeMatchers.isDisabled());
     }
 
 
@@ -86,8 +83,8 @@ public class PlayMusicTest extends ApplicationTest {
     	//Make sure the button is disabled when there is invalid text present
         robot.clickOn("#mainText");
         robot.write("Invalid Text");
-        robot.clickOn("#playButton");
-        FxAssert.verifyThat("#playButton", NodeMatchers.isDisabled());
+        robot.clickOn("#previewButton");
+        FxAssert.verifyThat("#previewButton", NodeMatchers.isDisabled());
     }
     
 
@@ -101,9 +98,9 @@ public class PlayMusicTest extends ApplicationTest {
         		+ "HT|----------------|----oo----------|\r\n"
         		+ "MT|----------------|------oo--------|\r\n"
         		+ "BD|o-------o-------|o-------o-------|", 0);
-        robot.clickOn("#playButton");
-        FxAssert.verifyThat("#playButton", NodeMatchers.isEnabled());
-        FxAssert.verifyThat("#playButton", NodeMatchers.isEnabled());
+        robot.clickOn("#previewButton");
+        FxAssert.verifyThat("#previewButton", NodeMatchers.isEnabled());
+        FxAssert.verifyThat("#previewButton", NodeMatchers.isEnabled());
         
     }
     
@@ -118,10 +115,10 @@ public class PlayMusicTest extends ApplicationTest {
         		+ "HT|----------------|----oo----------|\r\n"
         		+ "MT|----------------|------oo--------|\r\n"
         		+ "BD|o-------o-------|o-------o-------|", 0);
-        robot.clickOn("#playButton");
+        robot.clickOn("#previewButton");
         //Verify that the play and pause buttons are clickable
         FxAssert.verifyThat("#pauseButton", NodeMatchers.isEnabled());
-        FxAssert.verifyThat("#playMusic", NodeMatchers.isEnabled());
+        FxAssert.verifyThat("#playButton", NodeMatchers.isEnabled());
         
         //Check if the current time on the player is 00:00 since the window just launched
         FxAssert.verifyThat("#labelTimeCur", (Label current) -> {
@@ -130,7 +127,7 @@ public class PlayMusicTest extends ApplicationTest {
         });
         
         //Have the player play for a second
-        robot.clickOn("#playMusic");
+        robot.clickOn("#playButton");
         robot.sleep(1000);
         robot.clickOn("#pauseButton");
         
@@ -152,7 +149,7 @@ public class PlayMusicTest extends ApplicationTest {
         		+ "|-----2-----------|-2---------------|\r\n"
         		+ "|---2-------------|-2---------------|\r\n"
         		+ "|-0---------------|-0---------------|", 0);
-        robot.clickOn("#playButton");
+        robot.clickOn("#previewButton");
         
         //Confirm that the default slider value of 120.0 is correct
         FxAssert.verifyThat("#tempSlider", (Slider current) -> {
@@ -161,7 +158,7 @@ public class PlayMusicTest extends ApplicationTest {
         });
         
         //Have the player play for a second
-        robot.clickOn("#playMusic");
+        robot.clickOn("#playButton");
         robot.sleep(1000);
         robot.clickOn("#pauseButton");
         
@@ -193,7 +190,7 @@ public class PlayMusicTest extends ApplicationTest {
         });
         
         //Have the player play for a second
-        robot.clickOn("#playMusic");
+        robot.clickOn("#playButton");
         robot.sleep(1000);
         robot.clickOn("#pauseButton");
         
@@ -203,6 +200,24 @@ public class PlayMusicTest extends ApplicationTest {
         	return !lbl.equals("00:16");
         });       
         //Essentially, since the end time has changed, it means that the bpm must have changed.
+    }
+	
+	@Test
+    public void testWithSlur(FxRobot robot) {
+    	//Make sure the slur method is tested with pull-offs
+        robot.clickOn("#mainText");
+        robot.write("|----------|----------1-------|\r\n"
+        		+ "|----------|--4---------1-----|\r\n"
+        		+ "|--3p0-3---|--3p0-6p5-----3p0-|\r\n"
+        		+ "|----------|------------------|\r\n"
+        		+ "|----------|------------------|\r\n"
+        		+ "|----------|------------------|", 0);
+        robot.clickOn("#previewButton");
+        FxAssert.verifyThat("#previewButton", NodeMatchers.isEnabled());
+        FxAssert.verifyThat("#playButton", NodeMatchers.isEnabled());
+        
+        
+        
     }
     
 

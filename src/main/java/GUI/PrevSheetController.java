@@ -3,428 +3,376 @@ package GUI;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Timer;
+import java.util.TimerTask;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
-
 import converter.Score;
 import converter.measure.TabMeasure;
 import custom_exceptions.TXMLException;
+import draw.score.DrawDrumNotes;
+import draw.score.DrawGuitarNotes;
+import draw.score.DrumNotesList;
+import draw.score.DrumStaff;
+import draw.score.GuitarNotesList;
+import draw.score.GuitarStaff;
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+
+
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
+
+
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
+
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.Window;
 import javafx.scene.paint.Color;
 import models.Part;
+
+import models.measure.note.Note;
+
+import models.measure.note.Notehead;
 import models.part_list.PartList;
 import models.part_list.ScorePart;
+import utility.Range;
+import utility.XmlPlayer;
 
 
 public class PrevSheetController extends Application {
+	/**
+	 * MainViewController object to store parent mvc instance
+	 */
 	private MainViewController mvc;
-	@FXML 
-	public CodeArea mxlTextPre;  
+
+
+	/**
+	 * XmlPlayer object to use xmlplayer functionality
+	 */
+	private XmlPlayer mp;
+	/**
+	 * String to store xml output as string from main view
+	 */
+	private String xmlstr;
+	private static Window convertWindow = new Stage();
+	private float time, temp;
+	public boolean playing;
+	private Timer timer;
+	private TimerTask task;
 	@FXML
-	//public VBox myVBox;
-	
+	TextField gotoMeasureField;
+	@FXML
+	Button playMusic;
+	@FXML
+	Button pauseButton;
+	@FXML
+	Slider songSlider;
+	@FXML
+	Slider tempSlider;
+	@FXML
+	Label tempLabelL;
+	@FXML
+	Label tempLabelH;
+	@FXML
+	Label labelTimeEnd;
+	@FXML
+	Label labelTimeCur;
+	@FXML
+	ProgressBar songPB;
+
+	@FXML
+	public CodeArea mxlTextPre;
+	@FXML
+	ScrollPane scrollPane;
+
+
+	// public VBox myVBox;
+
 	public String clef;
+
+
+
 	private String instrumentName;
-	@FXML 
+	DrumNotesList drumNotesList = new DrumNotesList();
+	GuitarNotesList guitarNotesList = new GuitarNotesList();
+	DrawDrumNotes drawDrumNotes = new DrawDrumNotes();
+	DrawGuitarNotes drawGuitarNotes = new DrawGuitarNotes();
+	@FXML
+
+
+
+
 	public void initialize() {
-		//mxlTextPre.setParagraphGraphicFactory(LineNumberFactory.get(mxlTextPre));
+		// mxlTextPre.setParagraphGraphicFactory(LineNumberFactory.get(mxlTextPre));
 		Button button1 = new Button("button1");
-		//myVBox.setMargin(button1,new Insets(10, 10, 10, 10));
-		//myVBox.setStyle("-fx-border-color: red");
-		//String musicXml = mvc.converter.getMusicXML();
-		//System.out.println(musicXml);
+
+
+		
+//		Initialize player labels and sliders
+		songPB.setMinWidth(songSlider.getMaxWidth());
+		songPB.setMaxWidth(songSlider.getMaxWidth());
+		songSlider.valueChangingProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observableValue, Boolean wasChanging,
+					Boolean isChanging) {
+				time = (float) songSlider.getValue() / 100.0f;
+				if (!isChanging) {
+
+					mp.seek(time);
+				}
+			}
+		});
+		songSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+			time = newValue.floatValue() / 100.0f;
+			songPB.setProgress(newValue.doubleValue() / 100);
+
+
+			if (mp.getManagedPlayer().isStarted()) {
+				labelTimeCur.setText(mp.getCurTime());
+				labelTimeEnd.setText(mp.getDuration());
+
+				long cur = mp.getManagedPlayer().getTickPosition();
+				long dur = mp.getManagedPlayer().getTickLength();
+				if (Math.abs(newValue.doubleValue() - (oldValue.doubleValue())) > 1.4) {
+//					mp.seek(time);
+				}
+			}
+		});
+
+		tempSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+			temp = newValue.floatValue();
+			
+				if (mp.getManagedPlayer()!=null && !mp.getManagedPlayer().isFinished()) {
+
+					try {
+						mp.setTempo(temp);
+						labelTimeCur.setText(mp.getCurTime());
+						labelTimeEnd.setText(mp.getDuration());
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+				}
+			
+		});
+
+
+
+
+
+
+		//mvc = mvcInput;
+
+
 	}
+
+
+
 	@Override
-	
 
 	public void start(Stage primaryStage) throws Exception {
 		// TODO Auto-generated method stub
+//
+//		Scene scene = new Scene(scrollPane, 800, 600, Color.AZURE);
+//
+//		primaryStage.setTitle("music sheet");
+//
+//		primaryStage.setScene(scene);
+//
+//		primaryStage.show();
+	}
+
+
+	public void setMainViewController(MainViewController mvcInput) throws Exception{
+
+		mvc = mvcInput;
+		
+
+//		Draw sheet music on scroll pane
 		Score score = mvc.converter.getScore();
 		String instrumentName = getInstrumentName(score);
-		int[][] noteSpanSize = printMusicXml();
-		Text instrumentNameTitle = new Text(450,100,instrumentName);
+
+		Text instrumentNameTitle = new Text(450, 100, instrumentName);
 		instrumentNameTitle.setFont(Font.font("Verdana", 50));
 		Group box = new Group();
-		Line xAxis = new Line(100,300,900,300);
-		xAxis.setStroke(Color.WHITE);
-		box.getChildren().add(xAxis);
-		
-		Line testLine = new Line(100,200,900,200);
-		testLine.setStroke(Color.WHITE);
-		box.getChildren().add(testLine);
-
-
-		Line yAxis = new Line(500,100,500,500);
-		yAxis.setStroke(Color.WHITE);
-		box.getChildren().add(yAxis);
-		
+		Group drawing=new Group();
 		box.getChildren().add(instrumentNameTitle);
-		
-		//Draw Staff
-		if(instrumentName.contains("Drum")) {
-			drawStaff5(box);
+		drawing.getChildren().add(instrumentNameTitle);
+//		System.out.println(instrumentName); 
+		// Draw Staff
+		if (instrumentName.contains("Drum")) {
+			DrumStaff drumStaff = new DrumStaff();
+			drumStaff.draw(drawing, 0);
+			int[][] notesPositionList = drumNotesList.notesList(mvc);
+
+			//hashmap of drum notes map
+			HashMap <Integer, List<Note>>drumNotesMap = drumNotesList.getDrumNotesMap();
+			HashMap<Integer,Integer>drumMeasuresMap = drumNotesList.getMeasures();
+			//draw with 2D array
+			//drawDrumNotes.draw(mvc,box, notesPositionList);
+			drawDrumNotes.drawEverything(drumNotesMap,drumMeasuresMap,mvc);
+			drawing=drawDrumNotes.getDrawing();
+
+			
+		} else if (instrumentName.contains("Guitar")) {
+			GuitarStaff guitarStaff = new GuitarStaff();
+			int[][] notesPositionList = guitarNotesList.notesList(mvc);
+			//hashmap of Guitar notes map and measures
+			HashMap <Integer, List<Note>>guitarNotesMap = guitarNotesList.getGuitarNotesMap();
+			HashMap<Integer,Integer>guitarMeasuresMap = guitarNotesList.getMeasures();
+			//draw with Map
+			drawGuitarNotes.drawEverything(guitarNotesMap,guitarMeasuresMap,mvc);
+			drawing=drawGuitarNotes.getDrawing();
+
 		}
-		else if(instrumentName.contains("Guitar")) {
-			drawStaff6(box);
-		}
+		scrollPane.setContent(drawing);
+		scrollPane.setPannable(true);
 		
-		//Draw notes
-		int noteHeightDrum=0;
+//		Player initialization
+		xmlstr = mvc.converter.getMusicXML();
+		playing =false;
+		mp = new XmlPlayer(mvc, xmlstr);
+		labelTimeCur.setText("00:00");
+		labelTimeEnd.setText(mp.getDuration());
+	}
 
+
+
+
+
+	public String getInstrumentName(Score score) throws TXMLException {
+
+
+		String instrumentName = score.getModel().getPartList().getScoreParts().get(0).getPartName();
+		return instrumentName;
+	}
+
+
+
+
+	@FXML
+	private void playMusicHandle() throws Exception {
+		playing=true;
+		mvc.converter.update();
+		beginTimer();
+		mp.play();
 		
-		//draw clef and Drum notes
-		System.out.println(clef);
-		if(clef.matches("percussion")) {
-			Line line1 = new Line(105,220,105,240);
-			Line line2 = new Line(110,220,110,240);
-			line1.setStrokeWidth(4);
-			line2.setStrokeWidth(4);
-			box.getChildren().add(line2);
-			box.getChildren().add(line1);
-			System.out.printf("drum note span size" + String.valueOf(noteSpanSize.length));
-			for (int i=0; i<noteSpanSize.length;i++) {
-//				for(int ii=0;i<i%30;ii++) {
-				/*
-				 * int height = Integer.valueOf(i/30); int horizontalSpan =i%30;
-				 * System.out.printf("i/30 %d", height); System.out.printf("i%30 %d",
-				 * horizontalSpan);
-				 */
-					for (int j=0; j<noteSpanSize[i].length;j++) {
-						noteHeightDrum=noteSpanSize[i][j];
-						if(noteHeightDrum<20) {
-							Line noteLine = new Line(135+25.0*i,200-5.0*noteHeightDrum,135+25.0*i,250-5.0*noteHeightDrum);
-							Circle note = new Circle(130+25.0*i,250.0-5.0*noteHeightDrum,5 );
-							note.setFill(Color.MIDNIGHTBLUE);
+	}
 
+	public void beginTimer() {
 
-							box.getChildren().add(noteLine);
-							box.getChildren().add(note);
-						}
-
+		timer = new Timer();
+		task = new TimerTask() {
+			public void run() {
+				if (mp.getManagedPlayer().isStarted()) {
+					long cur = mp.getManagedPlayer().getTickPosition();
+					long dur = mp.getManagedPlayer().getTickLength();
+//				System.out.println(cur+" <-pos len-> "+dur);
+//				labelTimeCur.setText(mp.getCurTime());
+					if (dur != 0 && (cur / dur == 1)) {
+						cancelTimer();
 					}
-//				}
-
-				
+					Platform.runLater(new Runnable() {
+						@Override
+						public void run() {
+							labelTimeCur.setText(mp.getCurTime());
+							labelTimeEnd.setText(mp.getDuration());
+							if (dur != 0) {
+								songSlider.setValue(((double) cur / (double) dur) * 100);
+							}
+						}
+					});
+				}
 			}
 
-		}
-		//draw TAB and Guitar notes
-		else if(clef.matches("TAB")) {
-			Text t = new Text(105,215,"T");
-			t.setFont(Font.font("Verdana", 20));
-			t.setFill(Color.CRIMSON);
-			Text a = new Text(105,230,"A");
-			a.setFont(Font.font("Verdana", 20));
-			a.setFill(Color.CRIMSON);
-			Text b = new Text(105,245,"B");
-			b.setFont(Font.font("Verdana", 20));
-			b.setFill(Color.CRIMSON);
-			box.getChildren().add(t);
-			box.getChildren().add(a);
-			box.getChildren().add(b);
-			for (int i=0; i<noteSpanSize.length;i++) {
-				int stringIndex = noteSpanSize[i][1];
-				String fret = Integer.toString(noteSpanSize[i][0]);
-				Text fretText= new Text(130+25*i, 200+stringIndex*10,fret);
-				fretText.setFill(Color.CRIMSON);
-				box.getChildren().add(fretText);
-				
-			}
-
-
-		}
-		Scene scene = new Scene(box,1000,600,Color.AZURE);
-		
-		primaryStage.setTitle("music sheet");
-		
-		primaryStage.setScene(scene);
-		
-		primaryStage.show();
+		};
+		timer.scheduleAtFixedRate(task, 1000, 1000);
 	}
 	
+	public void playMusicHandleTest() throws Exception {
+
+		mvc.converter.update();
+		mp.play();
+		beginTimer();
+		
+	}
 	
+	public void cancelTimer() {
+		timer.cancel();
+	}
 	
-    public void setMainViewController(MainViewController mvcInput) {
-    
-		
+	public boolean getPlaying() {
+		return playing;
+	}
 
-		
-    	mvc = mvcInput;
-    	
-    }
-    
-    public void drawStaff5(Group box) {
-		for (int i=0;i<5;i++) {
-			Line staffLine = new Line(100.0,250.0-10.0*i,900.0,250.0-10.0*i);
-
-			box.getChildren().add(staffLine);
-
-			}
-    }
-    
-    public void drawStaff6(Group box) {
-		for (int i=0;i<6;i++) {
-			Line staffLine = new Line(100.0,250.0-10.0*i,900.0,250.0-10.0*i);
-
-			box.getChildren().add(staffLine);
-
-			}
-    }
-
-    public String getInstrumentName(Score score) throws TXMLException {
+	@FXML
+	private void pauseMusicHandle() throws InterruptedException {
+		playing=false;
+		mp.pause();
+		cancelTimer();
+	}
 	
-		
-    	String instrumentName = score.getModel().getPartList().getScoreParts().get(0).getPartName();
-    	return instrumentName;
-    }
-    
-    
-    public int getNoteListSizeDrum(Score score) {
-		List<TabMeasure> measureList = score.getMeasureList();
-		
-		int noteSize=0;
-		
-		for(int i=0; i<measureList.size();i++) {
-			for (int j=0; j<measureList.get(i).getSortedNoteList().size();j++)
-			{	
-				
-				int duration=measureList.get(i).getSortedNoteList().get(j).duration;
-				System.out.println("duration: "+duration);
-				
-				/*
-				 * if(measureList.get(i).getSortedNoteList().get(j).getModel().getChord()==null)
-				 * {
-				 */ noteSize++; /* } */
-				 
-				
-			}
-			
-		}
-		return noteSize;
-		
-    }
-    
-    public int getNoteListSizeGuitar(Score score) {
-  		List<TabMeasure> measureList = score.getMeasureList();
-  		
-  		int noteSize=0;
-  		
-  		for(int i=0; i<measureList.size();i++) {
-  			for (int j=0; j<measureList.get(i).getSortedNoteList().size();j++)
-  			{	
-	
-				  if(measureList.get(i).getSortedNoteList().get(j).getModel().getChord()==null)
-				  {
-				 
-  					noteSize++;
-  					}
-				  else {
-					  noteSize++;
-				  }
-  				 				
-  			} 			
-  		}
-  		return noteSize;
-  		
-      }
-    
-    public int[][] printMusicXml() throws TXMLException  {
+	public boolean isPlaying() {
+		return this.playing;
+	}
 
-		String musicXml = mvc.converter.getMusicXML();
-		
-		Score score1 = mvc.converter.getScore();
-		
-		//System.out.println(musicXml);
 
-		String instrumentName = getInstrumentName(score1);
-		
-		int scoreMeasureListSize = mvc.converter.getScore().getMeasureList().size();
-		//int noteSize = score1.getMeasureList().get(1).getSortedNoteList().size();
-		
-		
-		
-		 List<TabMeasure> measureList = score1.getMeasureList();
-		 int noteSize=0;
-		 if(instrumentName.contains("Drum")) {
-			 noteSize = getNoteListSizeDrum(score1);	
-		 }
-		 if(instrumentName.contains("Guitar")) {
-			 noteSize = getNoteListSizeGuitar(score1);	
-		 }
-		
-		
-		int notePosition[][] = new int[noteSize][2] ;
-		
-		//Make default position 20 and 20 is ignored while drawing notes
-		for (int i=0;i<noteSize;i++) {
-			notePosition[i][1]=20;
-		}
-		int notePositionIndexD1 =0;
-		int notePositionIndexD2 =0;
-		
-		// Create Note list for Drum
-		if(instrumentName.contains("Drum")) {
-			
-			for(int i=0; i<measureList.size();i++) {
-				for (int j=0; j<measureList.get(i).getSortedNoteList().size();j++)
-				{	
-					if(measureList.get(i).getSortedNoteList().get(j).getModel()==null ||measureList.get(i).getSortedNoteList().get(j).getModel().getUnpitched()==null ) {
-			
-					}
-					else {
-						int octiveInt = measureList.get(i).getSortedNoteList().get(j).getModel().getUnpitched().getDisplayOctave();
-						String octive = String.valueOf(octiveInt);
-						String note = measureList.get(i).getSortedNoteList().get(j).getModel().getUnpitched().getDisplayStep();
-						String type = measureList.get(i).getSortedNoteList().get(j).getModel().getType();
-						//String notehead= measureList.get(i).getSortedNoteList().get(j).getModel().getNotehead().toString();
-						if(measureList.get(i).getSortedNoteList().get(j).getModel().getChord()==null) 
-							{
-							notePositionIndexD2=0;
-							System.out.println("\n"+note +octive);
-							String noteWithOctive = note+octive;
-							//System.out.println(noteWithOctive);
-							int notePositionOnStaff = noteToNumber(noteWithOctive);
-							notePosition[notePositionIndexD1][notePositionIndexD2]=notePositionOnStaff;
-							notePositionIndexD1++;
-							System.out.println(notePositionOnStaff);
-							}
-						else {
-							System.out.println(note+octive );
-							String noteWithOctive = note+octive;
-							int notePositionOnStaff = noteToNumber(noteWithOctive);
-							notePositionIndexD2=1;
-							notePositionIndexD1--;
-							notePosition[notePositionIndexD1][notePositionIndexD2]=notePositionOnStaff;
-							notePositionIndexD1++;
-							
-						}
-				
-					}
-					
-					
-					
-					
-				}
-				
-			}
-		}
-		
-		//Create note list for Guitar
-		if(instrumentName.contains("Guitar")) {
-			
-			for(int i=0; i<measureList.size();i++) {
-				for (int j=0; j<measureList.get(i).getSortedNoteList().size();j++)
-				{	
-	  				int fret = measureList.get(i).getSortedNoteList().get(j).getModel().getNotations().getTechnical().getFret();	
-	  				int stringPosition = measureList.get(i).getSortedNoteList().get(j).getModel().getNotations().getTechnical().getString();
-					String type = measureList.get(i).getSortedNoteList().get(j).getModel().getType();
-					
-		/*			  if(measureList.get(i).getSortedNoteList().get(j).getModel().getChord()==null)
-					  {
-					 */
-						notePositionIndexD2=0;
-						System.out.println("\n"+fret +stringPosition);
-				
-	
-						notePosition[notePositionIndexD1][notePositionIndexD2]=fret;
-						notePosition[notePositionIndexD1][notePositionIndexD2+1]=stringPosition;
-						notePositionIndexD1++;
+	public void setBPM(double bpm) {
+		tempSlider.setValue(bpm);
+	}
+	@FXML
+	private void handleGotoMeasure() {
+//		int measureNumber = Integer.parseInt(gotoMeasureField.getText());
+//		if (!goToMeasure(measureNumber)) {
+//			Alert alert = new Alert(Alert.AlertType.ERROR);
+//			alert.setContentText("Measure " + measureNumber + " could not be found.");
+//			alert.setHeaderText(null);
+//			alert.show();
+//		}
+	}
 
-						/* } */
-			
-					
-					
-				}
-				
-			}
+	private void goToMeasure(int measureCount) {
+//		TabMeasure measure = converter.getScore().getMeasure(measureCount);
+//		if (measure == null)
+//			return false;
+//		List<Range> linePositions = measure.getRanges();
+//		int pos = linePositions.get(0).getStart();
+//		mainText.moveTo(pos);
+//		mainText.requestFollowCaret();
+//		mainText.requestFocus();
+		
+	}
+
+	@FXML
+	public void exit() {
+		playing=false;
+		mp.getManagedPlayer().finish();
+		mvc.convertWindow.hide();
+		if(timer!=null){
+		cancelTimer();
 		}
-		
-		for (int i=0; i<notePosition.length;i++) {
-			for (int j=0; j<notePosition[i].length;j++) {
-				//System.out.println(notePosition[i][j]);
-			}
-			
-		}
-		System.out.println("note size: "+ noteSize);
-		int printStr11 = score1.getMeasureList().size();
-		
-		List<Part> partList = score1.getModel().getParts();
-		
-		//System.out.println("score counts: "+score1.getModel().getScoreCount());
-		
-		
-		
-		clef = partList.get(0).getMeasures().get(0).getAttributes().clef.sign;
-		
-		
-		
-		System.out.printf("clef of this music sheet: %s \n", clef);
-		System.out.printf("instrument: %s \n", instrumentName);
-		
-		
-		return notePosition;
-		
-    }
-    
-    public int noteToNumber (String noteWithOctive) {
-    	// noteNumber indicates the location of the note on staff
-    	System.out.print(noteWithOctive);
-    	int noteNumber=0;
-    	//noteNumber set as 0 means E4 so it sits on the bottom line of 5 staff lines
-    	if (noteWithOctive.matches("C4")){   	
-    		
-    		noteNumber=-2;	  		
-    	}
-    	if (noteWithOctive.matches("D4")){
-    		noteNumber=-1;	
-    	}
-    	if (noteWithOctive.matches("E4")){
-    		noteNumber=0;	
-    	}
-    	if (noteWithOctive.matches("F4")){
-    		noteNumber=1;	
-    	}
-    	if (noteWithOctive.matches("G4")){
-    		noteNumber=2;	
-    	}
-    	if (noteWithOctive.matches("A4")){
-    		noteNumber=3;	
-    	}
-    	if (noteWithOctive.matches("B4")){
-    		noteNumber=4;	
-    	}
-    	if (noteWithOctive.matches("C5")){
-    		noteNumber=5;	
-    	}
-    	if (noteWithOctive.matches("D5")){
-    		noteNumber=6;	
-    	}
-    	if (noteWithOctive.matches("E5")){
-    		noteNumber=7;	
-    	}
-    	if (noteWithOctive.matches("F5")){
-    		noteNumber=8;	
-    	}
-    	if (noteWithOctive.matches("G5")){
-    		noteNumber=9;	
-    	}
-    	if (noteWithOctive.matches("A5")){
-    		noteNumber=10;	
-    	}
-    	return noteNumber;
-    }
+	}
+
+
 }
+
