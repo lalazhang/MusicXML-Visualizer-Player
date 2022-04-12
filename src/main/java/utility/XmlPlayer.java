@@ -24,9 +24,11 @@ import models.ScorePartwise;
 import models.measure.Measure;
 import models.measure.note.Note;
 
+
 /*
  * FIXME inspect and add null checking in methods
  */
+
 public class XmlPlayer {
 	/**
 	 * MainViewController object to store parent mvc instance
@@ -52,6 +54,7 @@ public class XmlPlayer {
 	 * Listener object to help with playing function
 	 */
 	private StaccatoParserListener stacListener;
+
 	/**
 	 * Listener object for drumset playback
 	 */
@@ -61,6 +64,7 @@ public class XmlPlayer {
 	 */
 	private MidiParserListener midiListener;
 	/**
+
 	 * Pattern to help with playing guitar playback
 	 */
 	private Pattern staccatoPattern;
@@ -70,6 +74,7 @@ public class XmlPlayer {
 	private Pattern drumPattern;
 	/**
 	 * Pattern to help with tracking drumset progress
+
 	 */
 	private Pattern trackDrumPattern;
 	/**
@@ -86,6 +91,7 @@ public class XmlPlayer {
 	private ScorePartwise score;
 	private boolean playing;
 
+
 	/**
 	 * Constructor takes mainview object and xml output as string, instantiates our
 	 * fields and calls update method
@@ -95,11 +101,14 @@ public class XmlPlayer {
 	 */
 	public XmlPlayer(MainViewController mvcInput, String str) throws Exception {
 		mvc = mvcInput;
+
 		score = mvc.converter.getScore().getModel();
+
 		xmlString = str;
 		xmlParser = new MusicXmlParser();
 		stacListener = new StaccatoParserListener();
 		staccatoPattern = new Pattern();
+
 		drumPattern = new Pattern();
 		playing = false;
 		midiListener = new MidiParserListener();
@@ -114,6 +123,7 @@ public class XmlPlayer {
 		midiParser.addParserListener(stacListener);
 		midiParser.parse(midiListener.getSequence());
 		update(120);
+
 	}
 
 	/**
@@ -125,11 +135,13 @@ public class XmlPlayer {
 	private void update(int tempo) throws Exception {
 		// TODO Auto-generated method stub
 
+
 		if (this.inst.equals("Guitar")) {
 			staccatoPattern = stacListener.getPattern().setTempo(tempo).setInstrument(24);
 		} else {
 			trackDrumPattern = drumStacListener.getPattern().setTempo(tempo);
 			drumPattern = getDrumPattern(score).setTempo(tempo);
+
 
 //			System.out.println(staccatoPattern.getPattern());
 		}
@@ -142,6 +154,7 @@ public class XmlPlayer {
 	 * @throws Exception
 	 */
 	public void play() throws Exception {
+
 
 		if (this.inst.equals("Guitar")) {
 			if (!guPlayer.getManagedPlayer().isStarted()) {
@@ -159,6 +172,7 @@ public class XmlPlayer {
 					playing = true;
 				}
 			}
+
 
 		} else {
 			if (!dsPlayer.getManagedPlayer().isStarted()) {
@@ -183,6 +197,7 @@ public class XmlPlayer {
 	 * pauses music playback
 	 */
 	public void pause() {
+
 		if (this.inst.equals("Guitar")) {
 			guPlayer.getManagedPlayer().pause();
 			playing = false;
@@ -200,6 +215,7 @@ public class XmlPlayer {
 	 * @param time
 	 */
 	public void seek(float time) {
+
 		if (this.inst.equals("Guitar")) {
 			long tk = guPlayer.getManagedPlayer().getTickLength();
 			guPlayer.getManagedPlayer().seek((long) (time * tk));
@@ -207,6 +223,7 @@ public class XmlPlayer {
 			long tk = dsPlayer.getManagedPlayer().getTickLength();
 			dsPlayer.getManagedPlayer().seek((long) (time * tk));
 		}
+
 	}
 
 	/**
@@ -217,6 +234,7 @@ public class XmlPlayer {
 	 * 
 	 */
 	public void setTempo(float temp) throws Exception {
+
 		update((int) (temp));
 		if (this.inst.equals("Guitar")) {
 			if (guPlayer.getManagedPlayer().isPlaying()) {
@@ -244,6 +262,7 @@ public class XmlPlayer {
 				play();
 
 			}
+
 		}
 
 	}
@@ -254,6 +273,7 @@ public class XmlPlayer {
 	 * @param vol
 	 */
 	public int getTempo() {
+
 		int temp = 120;
 		if (this.inst.equals("Guitar")) {
 			temp = Integer.valueOf(staccatoPattern.getTokens().get(0).toString().substring(1));
@@ -261,6 +281,7 @@ public class XmlPlayer {
 		} else {
 			temp = Integer.valueOf(drumPattern.getTokens().get(0).toString().substring(1));
 		}
+
 		return temp;
 
 	}
@@ -276,13 +297,17 @@ public class XmlPlayer {
 		int seconds = 0;
 
 		if (this.inst.equals("Guitar")) {
+
 			Duration time = new Duration(guPlayer.getSequence(staccatoPattern).getMicrosecondLength() / 1000);
+
 			hours = (int) time.toHours();
 			minutes = (int) time.toMinutes();
 			seconds = (int) time.toSeconds();
 		} else {
 
+
 			Duration time = new Duration(dsPlayer.getSequence(trackDrumPattern).getMicrosecondLength() / 1000);
+
 			hours = (int) time.toHours();
 			minutes = (int) time.toMinutes();
 			seconds = (int) time.toSeconds();
@@ -316,6 +341,7 @@ public class XmlPlayer {
 	 */
 	public String getCurTime() {
 		double totUS = 0.0;
+
 		double cur = 0.0;
 		if (this.inst.equals("Guitar")) {
 			totUS = (double) (guPlayer.getSequence(staccatoPattern).getMicrosecondLength());
@@ -326,6 +352,7 @@ public class XmlPlayer {
 			cur = totUS * (double) dsPlayer.getManagedPlayer().getTickPosition()
 					/ dsPlayer.getManagedPlayer().getTickLength();
 		}
+
 
 		Duration time = new Duration(cur / 1000);
 
@@ -347,6 +374,7 @@ public class XmlPlayer {
 			return String.format("%d:%02d:%02d", hours, minutes, seconds);
 		else
 			return String.format("%02d:%02d", minutes, seconds);
+
 
 	}
 
@@ -481,6 +509,7 @@ public class XmlPlayer {
 		} else {
 			return 'q';
 		}
+
 	}
 
 	/**
@@ -489,11 +518,13 @@ public class XmlPlayer {
 	 * @return
 	 */
 	public ManagedPlayer getManagedPlayer() {
+
 		if (this.inst.equals("Guitar")) {
 			return this.guPlayer.getManagedPlayer();
 		} else {
 			return this.dsPlayer.getManagedPlayer();
 		}
+
 	}
 
 //	ScorePartwise sp = converter.getScore().getModel(); PartList pl = sp.getPartList(); pl.getScoreParts().get(0).getPartName();

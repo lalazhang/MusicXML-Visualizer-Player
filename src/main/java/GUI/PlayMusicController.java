@@ -43,7 +43,10 @@ public class PlayMusicController extends Application {
 	private String xmlstr;
 	private static Window convertWindow = new Stage();
 	private float time, temp;
+
 	public boolean playing;
+
+
 	private Timer timer;
 	private TimerTask task;
 	@FXML
@@ -92,7 +95,9 @@ public class PlayMusicController extends Application {
 
 //			}
 //		}
+
 		playing =false;
+
 		mp = new XmlPlayer(mvc, xmlstr);
 		labelTimeCur.setText("00:00");
 
@@ -136,8 +141,10 @@ public class PlayMusicController extends Application {
 
 		tempSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
 			temp = newValue.floatValue();
+
 			
 				if (mp.getManagedPlayer()!=null && !mp.getManagedPlayer().isFinished()) {
+
 
 					try {
 
@@ -151,7 +158,9 @@ public class PlayMusicController extends Application {
 					}
 
 				}
+
 			
+
 		});
 
 	}
@@ -161,11 +170,13 @@ public class PlayMusicController extends Application {
 		playing=true;
 		mvc.converter.update();
 		beginTimer();
+
 		mp.play();
 		
 	}
 
 	public void beginTimer() {
+
 
 		timer = new Timer();
 		task = new TimerTask() {
@@ -181,10 +192,12 @@ public class PlayMusicController extends Application {
 					Platform.runLater(new Runnable() {
 						@Override
 						public void run() {
+
 							labelTimeCur.setText(mp.getCurTime());
 							labelTimeEnd.setText(mp.getDuration());
 							if (dur != 0) {
 								songSlider.setValue(((double) cur / (double) dur) * 100);
+
 							}
 						}
 					});

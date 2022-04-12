@@ -110,6 +110,7 @@ public class PrevSheetController extends Application {
 	public String clef;
 
 
+
 	private String instrumentName;
 	DrumNotesList drumNotesList = new DrumNotesList();
 	GuitarNotesList guitarNotesList = new GuitarNotesList();
@@ -119,9 +120,11 @@ public class PrevSheetController extends Application {
 
 
 
+
 	public void initialize() {
 		// mxlTextPre.setParagraphGraphicFactory(LineNumberFactory.get(mxlTextPre));
 		Button button1 = new Button("button1");
+
 
 		
 //		Initialize player labels and sliders
@@ -141,6 +144,7 @@ public class PrevSheetController extends Application {
 		songSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
 			time = newValue.floatValue() / 100.0f;
 			songPB.setProgress(newValue.doubleValue() / 100);
+
 
 			if (mp.getManagedPlayer().isStarted()) {
 				labelTimeCur.setText(mp.getCurTime());
@@ -371,3 +375,4 @@ public class PrevSheetController extends Application {
 
 
 }
+
