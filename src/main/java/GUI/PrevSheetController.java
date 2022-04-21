@@ -112,10 +112,12 @@ public class PrevSheetController extends Application {
 
 
 	private String instrumentName;
-	DrumNotesList drumNotesList = new DrumNotesList();
-	GuitarNotesList guitarNotesList = new GuitarNotesList();
-	DrawDrumNotes drawDrumNotes = new DrawDrumNotes();
-	DrawGuitarNotes drawGuitarNotes = new DrawGuitarNotes();
+	private DrumNotesList drumNotesList = new DrumNotesList();
+	private GuitarNotesList guitarNotesList = new GuitarNotesList();
+	private DrawDrumNotes drawDrumNotes = new DrawDrumNotes();
+	private DrawGuitarNotes drawGuitarNotes = new DrawGuitarNotes();
+
+	HashMap<Integer,Integer>drumMeasuresMap = new HashMap<Integer, Integer>();
 	@FXML
 
 
@@ -192,14 +194,7 @@ public class PrevSheetController extends Application {
 
 	public void start(Stage primaryStage) throws Exception {
 		// TODO Auto-generated method stub
-//
-//		Scene scene = new Scene(scrollPane, 800, 600, Color.AZURE);
-//
-//		primaryStage.setTitle("music sheet");
-//
-//		primaryStage.setScene(scene);
-//
-//		primaryStage.show();
+
 	}
 
 
@@ -210,27 +205,30 @@ public class PrevSheetController extends Application {
 
 //		Draw sheet music on scroll pane
 		Score score = mvc.converter.getScore();
-		String instrumentName = getInstrumentName(score);
+		instrumentName = getInstrumentName(score);
 
 		Text instrumentNameTitle = new Text(450, 100, instrumentName);
 		instrumentNameTitle.setFont(Font.font("Verdana", 50));
-		Group box = new Group();
+		//Group box = new Group();
 		Group drawing=new Group();
-		box.getChildren().add(instrumentNameTitle);
+		//box.getChildren().add(instrumentNameTitle);
 		drawing.getChildren().add(instrumentNameTitle);
 //		System.out.println(instrumentName); 
 		// Draw Staff
 		if (instrumentName.contains("Drum")) {
 			DrumStaff drumStaff = new DrumStaff();
 			drumStaff.draw(drawing, 0);
-			int[][] notesPositionList = drumNotesList.notesList(mvc);
+			
+			//create drum measures and Notes map before getDrumNotesMap and getMeasures
+			drumNotesList.createMeasuresNotesMap(mvc);
 
-			//hashmap of drum notes map
+			//hashmap of drum notes map and drum measures map
 			HashMap <Integer, List<Note>>drumNotesMap = drumNotesList.getDrumNotesMap();
 			HashMap<Integer,Integer>drumMeasuresMap = drumNotesList.getMeasures();
 			//draw with 2D array
 			//drawDrumNotes.draw(mvc,box, notesPositionList);
 			drawDrumNotes.drawEverything(drumNotesMap,drumMeasuresMap,mvc);
+			//asign DrawDrumNote Group attribute to Group drawing
 			drawing=drawDrumNotes.getDrawing();
 
 			
@@ -342,17 +340,60 @@ public class PrevSheetController extends Application {
 	}
 	@FXML
 	private void handleGotoMeasure() {
-//		int measureNumber = Integer.parseInt(gotoMeasureField.getText());
-//		if (!goToMeasure(measureNumber)) {
-//			Alert alert = new Alert(Alert.AlertType.ERROR);
-//			alert.setContentText("Measure " + measureNumber + " could not be found.");
-//			alert.setHeaderText(null);
-//			alert.show();
-//		}
-		scrollPane.setVvalue(0.50);
+		
+		int measureNumber = Integer.parseInt(gotoMeasureField.getText());
+		goToMeasure(measureNumber);
+		int keyOfMeasureInMap=0;
+		int rowIndex =0;
+		int totalRows=0;
+		int divisor =20;
+		double measurePosition =1.0;
+		int value =0;
+		int key=0;
+		int drumMeasuresMapSize=drumMeasuresMap.size();
+	 
+		if (!goToMeasure(measureNumber)) {
+			Alert alert = new Alert(Alert.AlertType.ERROR);
+			alert.setContentText("Measure " + measureNumber + " could not be found.");
+			alert.setHeaderText(null);
+			alert.show();
+		}else {
+			for (HashMap.Entry<Integer,Integer> entry: drumMeasuresMap.entrySet()) {
+				value = entry.getValue();
+				key = entry.getKey();
+				//System.out.printf("\nvalue is %d where key is %d",value, key);
+
+				if(value>measureNumber ) {
+					
+					keyOfMeasureInMap = entry.getKey();
+					break;
+				}		
+			}
+			measurePosition =(keyOfMeasureInMap*1.0)/(drumMeasuresMapSize*1.0);
+			System.out.printf("\nMap size is %d, key for measure %d is %d",drumMeasuresMapSize, measureNumber, keyOfMeasureInMap);
+			scrollPane.setVvalue(measurePosition);
+		}
+		
+
 	}
 
-	private void goToMeasure(int measureCount) {
+	private boolean goToMeasure(int measureCount) {
+		boolean measureExist=true;
+		//HashMap<Integer,Integer>drumMeasuresMap = new HashMap<Integer, Integer>();
+		if(instrumentName.contains("Drum")) {
+		 drumMeasuresMap= drumNotesList.getMeasures();
+		}
+
+		if (measureCount<1 || measureCount>drumMeasuresMap.size()) {
+			
+		}
+		int lastKey = drumMeasuresMap.size()-1;
+		int lastMeasure = drumMeasuresMap.get(lastKey);
+		if (measureCount>lastMeasure|| measureCount<1) {
+			measureExist= false;
+		}
+		
+		return measureExist;
 //		TabMeasure measure = converter.getScore().getMeasure(measureCount);
 //		if (measure == null)
 //			return false;
@@ -361,6 +402,8 @@ public class PrevSheetController extends Application {
 //		mainText.moveTo(pos);
 //		mainText.requestFollowCaret();
 //		mainText.requestFocus();
+		
+	
 		
 	}
 

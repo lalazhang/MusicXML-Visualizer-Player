@@ -29,7 +29,7 @@ public class DrumNotesList {
 	}
 
 	//Note note= new Note();
-	Map <Integer,List<Note>> drumNotesList = new HashMap<> ();
+	private Map <Integer,List<Note>> drumNotesList = new HashMap<> ();
 
     public String getInstrumentName(Score score) throws TXMLException {
 	
@@ -77,7 +77,7 @@ public class DrumNotesList {
     
     
 	    //this method should be creating HashMap(keyValue, List<Note>), no return value
-	    public int[][] notesList(MainViewController mvc) throws TXMLException  {
+	    public void createMeasuresNotesMap(MainViewController mvc) throws TXMLException  {
 
 	    	int drumNotesListIdx=0;
 
@@ -173,13 +173,7 @@ public class DrumNotesList {
 								drumNotesListIdx++;
 								
 
-//								System.out.println(note+octive );
-//								String noteWithOctive = note+octive;
-//								int notePositionOnStaff = noteToNumber(noteWithOctive);
-//								notePositionIndexD2=1;
-//								notePositionIndexD1--;
-//								notePosition[notePositionIndexD1][notePositionIndexD2]=notePositionOnStaff;
-//								notePositionIndexD1++;
+//						
 								
 							}
 					
@@ -216,7 +210,7 @@ public class DrumNotesList {
 //
 //			System.out.println("hashmap size:" + drumNotesList.size());
 			
-			return notePosition;
+			
 		
 
 			
