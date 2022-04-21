@@ -349,6 +349,7 @@ public class PrevSheetController extends Application {
 //			alert.setHeaderText(null);
 //			alert.show();
 //		}
+		scrollPane.setVvalue(0.50);
 	}
 
 	private void goToMeasure(int measureCount) {
